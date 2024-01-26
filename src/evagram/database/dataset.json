@@ -1,0 +1,98 @@
+{
+    "owners": [
+        {
+            "owner_id": 1,
+            "first_name": "Brandon",
+            "last_name": "Zhu",
+            "username": "bzhu"
+        },
+        {
+            "owner_id": 2,
+            "first_name": "Tariq",
+            "last_name": "Hamzey",
+            "username": "thamzey"
+        },
+        {
+            "owner_id": 3,
+            "first_name": "Akira",
+            "last_name": "Sewnath",
+            "username": "asewnath"
+        },
+        {
+            "owner_id": 4,
+            "first_name": "Dan",
+            "last_name": "Holdaway",
+            "username": "dholdaway"
+        }
+    ],
+    "experiments": [
+        {
+            "experiment_id": 12,
+            "experiment_name": "experiment_control",
+            "owner_id": 1
+        },
+        {
+            "experiment_id": 3,
+            "experiment_name": "experiment_iv_1",
+            "owner_id": 2
+        },
+        {
+            "experiment_id": 1,
+            "experiment_name": "experiment_iv_2",
+            "owner_id": 3
+        },
+        {
+            "experiment_id": 96,
+            "experiment_name": "experiment_control",
+            "owner_id": 3
+        },
+        {
+            "experiment_id": 7,
+            "experiment_name": "experiment_iv_3",
+            "owner_id": 4
+        },
+        {
+            "experiment_id": 18,
+            "experiment_name": "experiment_control",
+            "owner_id": 4
+        }
+    ],
+    "plots": [
+        {
+            "plot_id": 121,
+            "plot_file": "brightnessTemperature_4_effectiveerror-vs-gsifinalerror.pkl",
+            "experiment_id": 12
+        },
+        {
+            "plot_id": 322,
+            "plot_file": "brightnessTemperature_10_hofx-vs-gsihofxbc.pkl",
+            "experiment_id": 3
+        },
+        {
+            "plot_id": 323,
+            "plot_file": "brightnessTemperature_8_hofx-vs-gsihofxbc.pkl",
+            "experiment_id": 3
+        },
+        {
+            "plot_id": 114,
+            "plot_file": "brightnessTemperature_8_effectiveerror-vs-gsifinalerror.pkl",
+            "experiment_id": 1
+        },
+        {
+            "plot_id": 165,
+            "plot_file": "brightnessTemperature_86_effectiveerror-vs-gsifinalerror.pkl",
+            "experiment_id": 1
+        },
+        {
+            "plot_id": 966,
+            "plot_file": "windEastward_effectiveerrordiff-vs-gsifinalerror.pkl",
+            "experiment_id": 96
+        }
+    ],
+    "observation_dirs": [
+        "amsua_aqua",
+        "amsua_n18",
+        "cris-fsr_n20",
+        "satwind"
+    ]
+}
