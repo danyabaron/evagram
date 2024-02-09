@@ -26,6 +26,7 @@ conn = psycopg2.connect(
 class TestDatabaseInputTool(unittest.TestCase):
     def setUp(self):
         self.cur = conn.cursor()
+        input_tool.main(['tests/eva'])
 
         self.cur.execute(
             """SELECT setval('owners_owner_id_seq',
@@ -116,12 +117,14 @@ class TestDatabaseInputTool(unittest.TestCase):
             }
             input_tool.insert_table_record(self.cur, experiment_obj, "experiments")
 
-    def test_DeleteExperimentAndPlots(self):
+    def test_DeleteExperimentCascades(self):
         self.cur.execute(
             "DELETE FROM experiments WHERE experiment_id=%s", (12,))
+        # find any instance of experiment in 'experiments'
         self.cur.execute(
             "SELECT (experiment_id) FROM experiments WHERE experiment_id=%s", (12,))
         assert len(self.cur.fetchall()) == 0
+        # find any instance of experiment in 'plots'
         self.cur.execute(
             "SELECT (plot_id) FROM plots WHERE experiment_id=%s", (12,))
         assert len(self.cur.fetchall()) == 0
@@ -131,14 +134,15 @@ class TestDatabaseInputTool(unittest.TestCase):
             "plot_id": 115,
             "experiment_id": 1,
             "group_id": 3,
-            "observation_id": 2
+            "observation_id": 1,
+            "variable_id": 2
         }
         input_tool.insert_table_record(self.cur, plot_obj, "plots")
         self.cur.execute(
             "SELECT (plot_id) FROM plots WHERE plot_id=%s", (115,))
         assert len(self.cur.fetchall()) == 1
 
-    def test_InsertPlotWithoutExperimentGroupOrObservation(self):
+    def test_InsertPlotMissingFields(self):
         with self.assertRaises(psycopg2.errors.NotNullViolation):
             plot_obj = {
                 "group_id": 1,
@@ -162,11 +166,12 @@ class TestDatabaseInputTool(unittest.TestCase):
             }
             input_tool.insert_table_record(self.cur, plot_obj, "plots")
 
-    def test_InsertPlotWithExperimentGroupOrObservationNotFound(self):
+    def test_InsertPlotInvalidFields(self):
         plot_obj = {
             "experiment_id": 12,
             "group_id": 1,
-            "observation_id": 1
+            "observation_id": 1,
+            "variable_id": 1
         }
         with self.assertRaises(psycopg2.errors.ForeignKeyViolation):
             plot_obj["experiment_id"] = -12
@@ -183,6 +188,12 @@ class TestDatabaseInputTool(unittest.TestCase):
             plot_obj["group_id"] = 1
             plot_obj["observation_id"] = -1
             input_tool.insert_table_record(self.cur, plot_obj, "plots")
+        self.tearDown()
+        self.setUp()
+        with self.assertRaises(psycopg2.errors.ForeignKeyViolation):
+            plot_obj["observation_id"] = 1
+            plot_obj["variable_id"] = -1
+            input_tool.insert_table_record(self.cur, plot_obj, "plots")
 
     def test_InsertObservationExpected(self):
         observation_obj = {
@@ -195,34 +206,6 @@ class TestDatabaseInputTool(unittest.TestCase):
             ("satwind",))
         assert len(self.cur.fetchall()) == 1
 
-    def test_InsertNewObservationToExistingVariable(self):
-        observation_obj = {
-            "observation_name": "amsua_n19"
-        }
-        input_tool.insert_table_record(self.cur, observation_obj, "observations")
-        # get existing variable and its variable_id
-        self.cur.execute("SELECT variable_id FROM variables WHERE variable_name=%s AND channel=%s",
-                         ("brightnessTemperature", 4))
-        variable_id = self.cur.fetchone()[0]
-
-        # get inserted observation and its observation_id
-        self.cur.execute("SELECT observation_id FROM observations WHERE observation_name=%s",
-                         ("amsua_n19",))
-        observation_id = self.cur.fetchone()[0]
-
-        # establish relationship between observation and variable in junction table
-        observation_variable_obj = {
-            "observation_id": observation_id,
-            "variable_id": variable_id
-        }
-        input_tool.insert_table_record(self.cur, observation_variable_obj, "observation_variable")
-
-        # check if variable exists in observation
-        self.cur.execute("SELECT variable_id FROM observation_variable WHERE observation_id=%s",
-                         (observation_id,))
-        variables = self.cur.fetchall()
-        self.assertTrue((variable_id,) in variables)
-
     def test_InsertObservationWithSameName(self):
         with self.assertRaises(psycopg2.errors.UniqueViolation):
             observation_obj = {
@@ -230,34 +213,29 @@ class TestDatabaseInputTool(unittest.TestCase):
             }
             input_tool.insert_table_record(self.cur, observation_obj, "observations")
 
-    def test_InsertExistingObservationToVariableTwice(self):
-        with self.assertRaises(psycopg2.errors.UniqueViolation):
-            observation_variable_obj = {
-                "observation_id": 1,
-                "variable_id": 1
-            }
-            input_tool.insert_table_record(
-                self.cur, observation_variable_obj, "observation_variable")
-
     def test_FetchExistingPlots(self):
-        # get all amsua_n18 plots in experiment "experiment_iv_2" where the user is asewnath
+        # get all amsua_n18 plots in experiment "experiment_iv_1" where the user is thamzey
         self.cur.execute("""SELECT plot_id, plots.experiment_id FROM plots
                             JOIN experiments ON plots.experiment_id = experiments.experiment_id
                             JOIN observations ON plots.observation_id = observations.observation_id
+                            JOIN variables ON plots.variable_id = variables.variable_id
                             JOIN owners ON owners.owner_id = experiments.owner_id
                             WHERE experiments.experiment_name = %s
                             AND owners.username = %s AND observations.observation_name = %s; """,
-                         ("experiment_iv_2", "asewnath", "amsua_n18"))
+                         ("experiment_iv_1", "thamzey", "amsua_n18"))
         plots = self.cur.fetchall()
-        self.assertTrue(len(plots) == 1)
-        # checks if plot with plot_id=114 and experiment_id=1 was found
-        self.assertTrue((114, 1) in plots)
+        self.assertTrue(len(plots) == 2)
+        # checks if plot with plot_id=114 and experiment_id=3
+        # and plot_id=323 and experiment_id=3 was found
+        self.assertTrue((114, 3) in plots)
+        self.assertTrue((323, 3) in plots)
 
     def test_FetchNonExistingPlots(self):
         # get all satwind plots in experiment "experiment_iv_1"
         self.cur.execute("""SELECT plot_id FROM plots
                             JOIN experiments ON plots.experiment_id = experiments.experiment_id
                             JOIN observations ON plots.observation_id = observations.observation_id
+                            JOIN variables ON plots.variable_id = variables.variable_id
                             WHERE experiments.experiment_name = %s
                             AND observations.observation_name = %s;""",
                          ("experiment_iv_1", "satwind"))

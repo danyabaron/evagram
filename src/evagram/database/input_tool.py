@@ -2,6 +2,8 @@ import pickle
 import json
 import os
 import sys
+import argparse
+from pathlib import Path
 import psycopg2
 from dotenv import load_dotenv
 
@@ -14,9 +16,47 @@ db_name = os.environ.get('DB_NAME')
 db_user = os.environ.get('DB_USER')
 db_password = os.environ.get('DB_PASSWORD')
 
-# can be modified to the file path of experiment data
-EXPERIMENT_DATA_PATH = './tests/eva/'
+# default path configurations
+EXPERIMENT_DATA_PATH = './tests/eva'
 DATASET_PATH = './src/evagram/database/'
+PROCEDURES_PATH = './src/evagram/database/sql'
+
+
+def main(args):
+    global EXPERIMENT_DATA_PATH
+    parser = argparse.ArgumentParser()
+    parser.add_argument("experiment_path")
+    args = parser.parse_args(args)
+    experiment_path = Path(args.experiment_path)
+    if experiment_path.exists():
+        EXPERIMENT_DATA_PATH = args.experiment_path
+
+    conn = psycopg2.connect(
+        host=db_host,
+        port=db_port,
+        dbname=db_name,
+        user=db_user,
+        password=db_password
+    )
+    cur = conn.cursor()
+
+    create_procedures(cur)
+    drop_tables(cur)
+    create_tables(cur)
+    load_dataset_to_db(cur)
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
+def create_procedures(cur):
+    for proc in os.listdir(PROCEDURES_PATH):
+        proc_file = os.path.join(PROCEDURES_PATH, proc)
+        if os.path.isfile(proc_file) and proc.startswith("proc_") and proc.endswith(".sql"):
+            contents = open(proc_file, 'r')
+            cur.execute(contents.read())
+            contents.close()
 
 
 def create_tables(cur):
@@ -32,8 +72,6 @@ def create_tables(cur):
     cur.execute("CALL public.create_observations();")
     # Plots table
     cur.execute("CALL public.create_plots();")
-    # Observation Variable join table
-    cur.execute("CALL public.create_observation_variable();")
 
 
 def drop_tables(cur):
@@ -43,7 +81,6 @@ def drop_tables(cur):
     cur.execute("DROP TABLE IF EXISTS groups CASCADE")
     cur.execute("DROP TABLE IF EXISTS observations CASCADE")
     cur.execute("DROP TABLE IF EXISTS variables CASCADE")
-    cur.execute("DROP TABLE IF EXISTS observation_variable CASCADE")
 
 
 def load_dataset_to_db(cur):
@@ -138,13 +175,8 @@ def add_plot(cur, plot_obj, observation_dirs):
     plot_components = filename_no_extension.split("_")
 
     var_name = plot_components[0]
-    # parse channel fields for brightnessTemperature observations
-    if var_name == "brightnessTemperature":
-        channel = plot_components[1]
-        group_name = plot_components[2]
-    else:
-        channel = None
-        group_name = plot_components[1]
+    channel = plot_components[1] if plot_components[1] != '' else None
+    group_name = plot_components[2]
 
     # insert observation, variable, group dynamically if not exist in database
     cur.execute("SELECT observation_id FROM observations WHERE observation_name=%s",
@@ -194,39 +226,13 @@ def add_plot(cur, plot_obj, observation_dirs):
     plot_obj["script"] = script
     plot_obj["observation_id"] = observation_id
     plot_obj["group_id"] = group_id
+    plot_obj["variable_id"] = variable_id
 
     # insert plot to database
     insert_table_record(cur, plot_obj, "plots")
-
-    # create relationship between observation and variable in join table
-    # only if at least one of them was just inserted
-    if new_observation or new_variable:
-        observation_variable_obj = {
-            "observation_id": observation_id,
-            "variable_id": variable_id
-        }
-        insert_table_record(cur, observation_variable_obj, "observation_variable")
 
     return 0
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        EXPERIMENT_DATA_PATH = sys.argv[1]
-
-    conn = psycopg2.connect(
-        host=db_host,
-        port=db_port,
-        dbname=db_name,
-        user=db_user,
-        password=db_password
-    )
-    cur = conn.cursor()
-
-    drop_tables(cur)
-    create_tables(cur)
-    load_dataset_to_db(cur)
-
-    conn.commit()
-    cur.close()
-    conn.close()
+    main(sys.argv[1:])
