@@ -13,7 +13,6 @@ function Plot({ experiment, group, observation, variable }) {
       observation !== "" &&
       variable !== ""
     ) {
-      console.log(group);
       axios
         .get("http://localhost:8000/api/get-plot-components", {
           params: {

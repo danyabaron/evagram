@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from api.models import Experiments, Owners, Observations, Groups, Plots
 from api.serializers import *
+from django.core.exceptions import ObjectDoesNotExist
 
 @api_view(['GET'])
 def initial_load(request):
@@ -26,71 +27,130 @@ def initial_load(request):
 
 @api_view(['GET'])
 def get_plot_components(request):
-    experiment_id = request.GET["experiment_id"]
-    group_id = request.GET["group_id"]
-    observation_id = request.GET["observation_id"]
-    variable_id = request.GET["variable_id"]
+    try:
+        experiment_id = request.GET["experiment_id"]
+        observation_id = request.GET["observation_id"]
+        variable_id = request.GET["variable_id"]
+        group_id = request.GET["group_id"]
 
-    plot = Plots.objects.get(experiment=experiment_id,
-                         group=group_id,
-                         observation=observation_id,
-                         variable=variable_id)
-    serializer = PlotSerializer(plot)
-    return Response(serializer.data)
+        plot = Plots.objects.get(experiment=experiment_id,
+                            group=group_id,
+                            observation=observation_id,
+                            variable=variable_id)
+        serializer = PlotSerializer(plot)
+        return Response(serializer.data)
+    
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+    
+    except KeyError as e:
+        error_msg = "Missing request parameter detected: {}".format(str(e))
+        return Response({"error": error_msg}, status=400)
 
+    except ObjectDoesNotExist as e:
+        return Response({"error": str(e)}, status=400)
+    
 @api_view(['GET'])
 def update_user_option(request):
-    owner_id = request.GET["owner_id"]
-    data = {
-        "experiments": [],
-        "observations": [],
-        "variables": [],
-        "groups": []
-    }
-    data["experiments"] = get_experiments_by_owner(owner_id)
-    if len(data["experiments"]) > 0:
-        data["observations"] = get_observations_by_experiment(data["experiments"][0]["experiment_id"])
-    if len(data["observations"]) > 0:
-        data["variables"] = get_variables_by_observation(data["observations"][0]["observation_id"])
-    if len(data["variables"]) > 0:
-        data["groups"] = get_groups_by_variable(data["variables"][0]["variable_id"])
-    return Response(data)
+    try:
+        owner_id = request.GET["owner_id"]
+        Owners.objects.get(pk=owner_id)
+        data = {
+            "experiments": [],
+            "observations": [],
+            "variables": [],
+            "groups": []
+        }
+        data["experiments"] = get_experiments_by_owner(owner_id)
+        if len(data["experiments"]) > 0:
+            data["observations"] = get_observations_by_experiment(data["experiments"][0]["experiment_id"])
+        if len(data["observations"]) > 0:
+            data["variables"] = get_variables_by_observation(data["observations"][0]["observation_id"])
+        if len(data["variables"]) > 0:
+            data["groups"] = get_groups_by_variable(data["variables"][0]["variable_id"])
+        return Response(data)
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+    
+    except KeyError as e:
+        error_msg = "Missing request parameter detected: {}".format(str(e))
+        return Response({"error": error_msg}, status=400)
+
+    except ObjectDoesNotExist as e:
+        return Response({"error": str(e)}, status=400)
 
 @api_view(['GET'])
 def update_experiment_option(request):
-    experiment_id = request.GET["experiment_id"]
-    data = {
-        "observations": [],
-        "variables": [],
-        "groups": []
-    }
-    data["observations"] = get_observations_by_experiment(experiment_id)
-    if len(data["observations"]) > 0:
-        data["variables"] = get_variables_by_observation(data["observations"][0]["observation_id"])
-    if len(data["variables"]) > 0:
-        data["groups"] = get_groups_by_variable(data["variables"][0]["variable_id"])
-    return Response(data)
+    try:
+        experiment_id = request.GET["experiment_id"]
+        Experiments.objects.get(pk=experiment_id)
+        data = {
+            "observations": [],
+            "variables": [],
+            "groups": []
+        }
+        data["observations"] = get_observations_by_experiment(experiment_id)
+        if len(data["observations"]) > 0:
+            data["variables"] = get_variables_by_observation(data["observations"][0]["observation_id"])
+        if len(data["variables"]) > 0:
+            data["groups"] = get_groups_by_variable(data["variables"][0]["variable_id"])
+        return Response(data)
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+    except KeyError as e:
+        error_msg = "Missing request parameter detected: {}".format(str(e))
+        return Response({"error": error_msg}, status=400)
+
+    except ObjectDoesNotExist as e:
+        return Response({"error": str(e)}, status=400)
 
 @api_view(['GET'])
 def update_observation_option(request):
-    observation_id = request.GET["observation_id"]
-    data = {
-        "variables": [],
-        "groups": []
-    }
-    data["variables"] = get_variables_by_observation(observation_id)
-    if len(data["variables"]) > 0:
-        data["groups"] = get_groups_by_variable(data["variables"][0]["variable_id"])
-    return Response(data)
+    try:
+        observation_id = request.GET["observation_id"]
+        Observations.objects.get(pk=observation_id)
+        data = {
+            "variables": [],
+            "groups": []
+        }
+        data["variables"] = get_variables_by_observation(observation_id)
+        if len(data["variables"]) > 0:
+            data["groups"] = get_groups_by_variable(data["variables"][0]["variable_id"])
+        return Response(data)
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+    
+    except KeyError as e:
+        error_msg = "Missing request parameter detected: {}".format(str(e))
+        return Response({"error": error_msg}, status=400)
+
+    except ObjectDoesNotExist as e:
+        return Response({"error": str(e)}, status=400)
 
 @api_view(['GET'])
 def update_variable_option(request):
-    variable_id = request.GET["variable_id"]
-    data = {
-        "groups": []
-    }
-    data["groups"] = get_groups_by_variable(variable_id)
-    return Response(data)
+    try:
+        variable_id = request.GET["variable_id"]
+        Variables.objects.get(pk=variable_id)
+        data = {
+            "groups": []
+        }
+        data["groups"] = get_groups_by_variable(variable_id)
+        return Response(data)
+    
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+    
+    except KeyError as e:
+        error_msg = "Missing request parameter detected: {}".format(str(e))
+        return Response({"error": error_msg}, status=400)
+
+    except ObjectDoesNotExist as e:
+        return Response({"error": str(e)}, status=400)
 
 def get_owners():
     queryset = Owners.objects.all()

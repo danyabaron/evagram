@@ -19,7 +19,7 @@ function PlotMenu() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/initial-load")
+      .get("http://localhost:8000/api/initial-load/")
       .then((response) => {
         setOwners(response.data["owners"]);
         setExperiments(response.data["experiments"]);
@@ -64,7 +64,7 @@ function PlotMenu() {
   const updateOptionsByUser = (e) => {
     setCurrentExperiment(""); // sets state to empty until all data is fetched
     axios
-      .get("http://localhost:8000/api/update-user-option", {
+      .get("http://localhost:8000/api/update-user-option/", {
         params: {
           owner_id: e.target.value,
         },
@@ -82,7 +82,7 @@ function PlotMenu() {
   const updateOptionsByExperiment = (e) => {
     setCurrentGroup("");
     axios
-      .get("http://localhost:8000/api/update-experiment-option", {
+      .get("http://localhost:8000/api/update-experiment-option/", {
         params: {
           experiment_id: e.target.value,
         },
@@ -99,7 +99,7 @@ function PlotMenu() {
   const updateOptionsByObservation = (e) => {
     setCurrentVariable("");
     axios
-      .get("http://localhost:8000/api/update-observation-option", {
+      .get("http://localhost:8000/api/update-observation-option/", {
         params: {
           observation_id: e.target.value,
         },
@@ -115,7 +115,7 @@ function PlotMenu() {
   const updateOptionsByVariable = (e) => {
     setCurrentGroup("");
     axios
-      .get("http://localhost:8000/api/update-variable-option", {
+      .get("http://localhost:8000/api/update-variable-option/", {
         params: {
           variable_id: e.target.value,
         },
@@ -130,7 +130,7 @@ function PlotMenu() {
   return (
     <div id="menu_container" className={styles.menu_container}>
       <div className={styles.dropdown_container}>
-      <label for="user-menu">User:</label>
+        <label htmlFor="user-menu">User:</label>
         <select id="user-menu" onChange={(e) => updateOptionsByUser(e)}>
           {owners.map((owner) =>
             owner.owner_id === currentOwner ? (
@@ -144,7 +144,7 @@ function PlotMenu() {
             )
           )}
         </select>
-        <label for="experiment-menu">Experiment:</label>
+        <label htmlFor="experiment-menu">Experiment:</label>
         <select
           id="experiment-menu"
           onChange={(e) => updateOptionsByExperiment(e)}
@@ -168,7 +168,7 @@ function PlotMenu() {
             )
           )}
         </select>
-        <label for="observation-menu">Observation:</label>
+        <label htmlFor="observation-menu">Observation:</label>
         <select
           id="observation-menu"
           onChange={(e) => updateOptionsByObservation(e)}
@@ -192,7 +192,7 @@ function PlotMenu() {
             )
           )}
         </select>
-        <label for="variable-menu">Variable:</label>
+        <label htmlFor="variable-menu">Variable:</label>
         <select id="variable-menu" onChange={(e) => updateOptionsByVariable(e)}>
           {variables.map((variable) =>
             variable.variable_id === currentVariable ? (
@@ -224,7 +224,7 @@ function PlotMenu() {
             )
           )}
         </select>
-        <label for="group-menu">Group:</label>
+        <label htmlFor="group-menu">Group:</label>
         <select
           id="group-menu"
           onChange={(e) => setCurrentGroup(e.target.value)}
