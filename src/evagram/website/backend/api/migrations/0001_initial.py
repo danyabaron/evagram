@@ -49,7 +49,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('experiment_id', models.AutoField(primary_key=True, serialize=False)),
                 ('experiment_name', models.CharField(default='null')),
-                ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.owners')),
+                ('owner', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='api.owners')),
             ],
             options={
                 'db_table': 'experiments',
@@ -74,10 +75,14 @@ class Migration(migrations.Migration):
                 ('plot_id', models.AutoField(primary_key=True, serialize=False)),
                 ('div', models.CharField(blank=True, null=True)),
                 ('script', models.CharField(blank=True, null=True)),
-                ('experiment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.experiments')),
-                ('group', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.groups')),
-                ('observation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.observations')),
-                ('variable', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.variables')),
+                ('experiment', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='api.experiments')),
+                ('group', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='api.groups')),
+                ('observation', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='api.observations')),
+                ('variable', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='api.variables')),
             ],
             options={
                 'db_table': 'plots',
