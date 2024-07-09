@@ -1,19 +1,32 @@
 import styles from "../styles/PlotMenu.module.css";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import Plot from "./Plot.js";
+import PlotList from "./PlotList.js";
+import DropdownList from "./DropdownList.js";
+import VariableDropdownList from "./VariableDropdownList.js";
 
+/*
+The PlotMenu component contains all the dropdown menus the user interacts with to query
+for diagnostics stored in the Evagram database. The interaction works in a cascading
+order: the user must select an option in the dropdown from top to bottom. The user can
+leave dropdown menus empty or selected to broaden or narrow the diagnostics results.
+The component also contains the PlotList component that renders the Bokeh plots by the
+constraints.
+*/
 function PlotMenu() {
   const [owners, setOwners] = useState([]);
   const [groups, setGroups] = useState([]);
   const [experiments, setExperiments] = useState([]);
   const [observations, setObservations] = useState([]);
-  const [variables, setVariables] = useState([]);
+  const [variablesMap, setVariablesMap] = useState(new Map());
   const [currentOwner, setCurrentOwner] = useState("");
   const [currentExperiment, setCurrentExperiment] = useState("");
-  const [currentGroup, setCurrentGroup] = useState("");
   const [currentObservation, setCurrentObservation] = useState("");
-  const [currentVariable, setCurrentVariable] = useState("");
+  const [currentVariableName, setCurrentVariableName] = useState("");
+  const [currentChannel, setCurrentChannel] = useState("null");
+  const [currentGroup, setCurrentGroup] = useState("");
+
+  const [toggleChannel, setToggleChannel] = useState(false);
 
   const didMount = useRef(false);
 
@@ -23,231 +36,168 @@ function PlotMenu() {
       .then((response) => {
         setOwners(response.data["owners"]);
         setExperiments(response.data["experiments"]);
-        setGroups(response.data["groups"]);
-        setObservations(response.data["observations"]);
-        setVariables(response.data["variables"]);
+        // setGroups(response.data["groups"]);
+        // setObservations(response.data["observations"]);
         didMount.current = true;
       })
       .catch((error) => console.log(error));
   }, []);
 
-  useEffect(() => {
-    if (owners.length > 0) {
-      setCurrentOwner(owners[0]["owner_id"]);
-    }
-  }, [owners]);
-
-  useEffect(() => {
-    if (experiments.length > 0) {
-      setCurrentExperiment(experiments[0]["experiment_id"]);
-    }
-  }, [experiments]);
-
-  useEffect(() => {
-    if (observations.length > 0) {
-      setCurrentObservation(observations[0]["observation_id"]);
-    }
-  }, [observations]);
-
-  useEffect(() => {
-    if (variables.length > 0) {
-      setCurrentVariable(variables[0]["variable_id"]);
-    }
-  }, [variables]);
-
-  useEffect(() => {
-    if (groups.length > 0) {
-      setCurrentGroup(groups[0]["group_id"]);
-    }
-  }, [groups]);
+  const submitForm = (e) => {
+    setCurrentOwner(document.getElementById("user_menu").value);
+    setCurrentExperiment(document.getElementById("experiment_menu").value);
+    setCurrentObservation(document.getElementById("observation_menu").value);
+    setCurrentVariableName(document.getElementById("variable_menu").value);
+    setCurrentChannel(document.getElementById("channel_menu").value);
+    setCurrentGroup(document.getElementById("group_menu").value);
+  };
 
   const updateOptionsByUser = (e) => {
-    setCurrentExperiment(""); // sets state to empty until all data is fetched
-    axios
-      .get("http://localhost:8000/api/update-user-option/", {
-        params: {
-          owner_id: e.target.value,
-        },
-      })
-      .then((response) => {
-        setExperiments(response.data["experiments"]);
-        setGroups(response.data["groups"]);
-        setObservations(response.data["observations"]);
-        setVariables(response.data["variables"]);
-        setCurrentOwner(e.target.value);
-      })
-      .catch((error) => console.log(error));
+    // setCurrentExperiment(""); // sets state to empty until all data is fetched
+    setExperiments([]);
+    setObservations([]);
+    setVariablesMap(new Map());
+    setToggleChannel(false);
+    setGroups([]);
+    if (e.target.value !== "null") {
+      axios
+        .get("http://localhost:8000/api/update-user-option/", {
+          params: {
+            owner_id: e.target.value,
+          },
+        })
+        .then((response) => {
+          setExperiments(response.data["experiments"]);
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   const updateOptionsByExperiment = (e) => {
-    setCurrentGroup("");
-    axios
-      .get("http://localhost:8000/api/update-experiment-option/", {
-        params: {
-          experiment_id: e.target.value,
-        },
-      })
-      .then((response) => {
-        setGroups(response.data["groups"]);
-        setObservations(response.data["observations"]);
-        setVariables(response.data["variables"]);
-        setCurrentExperiment(e.target.value);
-      })
-      .catch((error) => console.log(error));
+    setObservations([]);
+    setVariablesMap(new Map());
+    setToggleChannel(false);
+    setGroups([]);
+    if (e.target.value !== "null") {
+      //setCurrentGroup("");
+      axios
+        .get("http://localhost:8000/api/update-experiment-option/", {
+          params: {
+            experiment_id: e.target.value,
+          },
+        })
+        .then((response) => {
+          setObservations(response.data["observations"]);
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   const updateOptionsByObservation = (e) => {
-    setCurrentVariable("");
-    axios
-      .get("http://localhost:8000/api/update-observation-option/", {
-        params: {
-          observation_id: e.target.value,
-        },
-      })
-      .then((response) => {
-        setVariables(response.data["variables"]);
-        setGroups(response.data["groups"]);
-        setCurrentObservation(e.target.value);
-      })
-      .catch((error) => console.log(error));
+    setVariablesMap(new Map());
+    setToggleChannel(false);
+    setGroups([]);
+    if (e.target.value !== "null") {
+      axios
+        .get("http://localhost:8000/api/update-observation-option/", {
+          params: {
+            observation_id: e.target.value,
+          },
+        })
+        .then((response) => {
+          setVariablesMap(response.data["variablesMap"]);
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
-  const updateOptionsByVariable = (e) => {
-    setCurrentGroup("");
-    axios
-      .get("http://localhost:8000/api/update-variable-option/", {
-        params: {
-          variable_id: e.target.value,
-        },
-      })
-      .then((response) => {
-        setGroups(response.data["groups"]);
-        setCurrentVariable(e.target.value);
-      })
-      .catch((error) => console.log(error));
+  const updateOptionsByVariableName = (e) => {
+    setToggleChannel(false);
+    setGroups([]);
+    if (e.target.value !== "null") {
+      setToggleChannel(true);
+      var channel = "null";
+      if (variablesMap[e.target.value][0] !== null) {
+        channel = variablesMap[e.target.value][0];
+      }
+      axios
+        .get("http://localhost:8000/api/update-variable-option/", {
+          params: {
+            variable_name: e.target.value,
+            channel: channel,
+          },
+        })
+        .then((response) => {
+          setGroups(response.data["groups"]);
+        })
+        .catch((error) => console.log(error));
+    }
+  };
+
+  const updateOptionsByChannel = (e) => {
+    setGroups([]);
+    if (e.target.value !== "null") {
+      axios
+        .get("http://localhost:8000/api/update-variable-option/", {
+          params: {
+            variable_name: document.getElementById("variable_menu").value,
+            channel: e.target.value,
+          },
+        })
+        .then((response) => {
+          setGroups(response.data["groups"]);
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   return (
     <div id="menu_container" className={styles.menu_container}>
       <div className={styles.dropdown_container}>
-        <label htmlFor="user-menu">User:</label>
-        <select id="user-menu" onChange={(e) => updateOptionsByUser(e)}>
-          {owners.map((owner) =>
-            owner.owner_id === currentOwner ? (
-              <option key={owner.owner_id} value={owner.owner_id} selected>
-                {owner.first_name + " " + owner.last_name}
-              </option>
-            ) : (
-              <option key={owner.owner_id} value={owner.owner_id}>
-                {owner.first_name + " " + owner.last_name}
-              </option>
-            )
-          )}
-        </select>
-        <label htmlFor="experiment-menu">Experiment:</label>
-        <select
-          id="experiment-menu"
-          onChange={(e) => updateOptionsByExperiment(e)}
+        <label>User:</label>
+        <DropdownList
+          id="user_menu"
+          updateOptionCallback={updateOptionsByUser}
+          objects={owners}
+        />
+        <label>Experiment:</label>
+        <DropdownList
+          id="experiment_menu"
+          updateOptionCallback={updateOptionsByExperiment}
+          objects={experiments}
+        />
+        <label>Observation:</label>
+        <DropdownList
+          id="observation_menu"
+          updateOptionCallback={updateOptionsByObservation}
+          objects={observations}
+        />
+        <label>Variable:</label>
+        <VariableDropdownList
+          id="variable_menu"
+          updateOptionsByVariableName={updateOptionsByVariableName}
+          updateOptionsByChannel={updateOptionsByChannel}
+          variablesMap={variablesMap}
+          toggleChannel={toggleChannel}
+        />
+        <label>Group:</label>
+        <DropdownList id="group_menu" objects={groups} />
+        <button
+          className="submitBtn"
+          type="submit"
+          onClick={(e) => submitForm(e)}
         >
-          {experiments.map((experiment) =>
-            experiment.experiment_id === currentExperiment ? (
-              <option
-                key={experiment.experiment_id}
-                value={experiment.experiment_id}
-                selected
-              >
-                {experiment.experiment_name}
-              </option>
-            ) : (
-              <option
-                key={experiment.experiment_id}
-                value={experiment.experiment_id}
-              >
-                {experiment.experiment_name}
-              </option>
-            )
-          )}
-        </select>
-        <label htmlFor="observation-menu">Observation:</label>
-        <select
-          id="observation-menu"
-          onChange={(e) => updateOptionsByObservation(e)}
-        >
-          {observations.map((observation) =>
-            observation.observation_id === currentObservation ? (
-              <option
-                key={observation.observation_id}
-                value={observation.observation_id}
-                selected
-              >
-                {observation.observation_name}
-              </option>
-            ) : (
-              <option
-                key={observation.observation_id}
-                value={observation.observation_id}
-              >
-                {observation.observation_name}
-              </option>
-            )
-          )}
-        </select>
-        <label htmlFor="variable-menu">Variable:</label>
-        <select id="variable-menu" onChange={(e) => updateOptionsByVariable(e)}>
-          {variables.map((variable) =>
-            variable.variable_id === currentVariable ? (
-              variable.channel ? (
-                <option
-                  key={variable.variable_id}
-                  value={variable.variable_id}
-                  selected
-                >
-                  {variable.variable_name + variable.channel}
-                </option>
-              ) : (
-                <option
-                  key={variable.variable_id}
-                  value={variable.variable_id}
-                  selected
-                >
-                  {variable.variable_name}
-                </option>
-              )
-            ) : variable.channel ? (
-              <option key={variable.variable_id} value={variable.variable_id}>
-                {variable.variable_name + variable.channel}
-              </option>
-            ) : (
-              <option key={variable.variable_id} value={variable.variable_id}>
-                {variable.variable_name}
-              </option>
-            )
-          )}
-        </select>
-        <label htmlFor="group-menu">Group:</label>
-        <select
-          id="group-menu"
-          onChange={(e) => setCurrentGroup(e.target.value)}
-        >
-          {groups.map((group) =>
-            group.group_id === currentGroup ? (
-              <option key={group.group_id} value={group.group_id} selected>
-                {group.group_name}
-              </option>
-            ) : (
-              <option key={group.group_id} value={group.group_id}>
-                {group.group_name}
-              </option>
-            )
-          )}
-        </select>
+          Submit
+        </button>
       </div>
       <div className={styles.plot}>
-        <Plot
+        <PlotList
+          owner={currentOwner}
           experiment={currentExperiment}
-          group={currentGroup}
           observation={currentObservation}
-          variable={currentVariable}
+          variableName={currentVariableName}
+          channel={currentChannel}
+          group={currentGroup}
         />
       </div>
     </div>
