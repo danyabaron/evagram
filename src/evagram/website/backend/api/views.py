@@ -263,6 +263,12 @@ def get_experiments_by_owner(pk_owner):
     return serializer.data
 
 
+def get_readers_by_experiment(pk_experiment):
+    queryset = Readers.objects.filter(plots__experiment_id=pk_experiment).distinct()
+    serializer = ReaderSerializer(queryset, many=True)
+    return serializer.data
+
+
 def get_observations_by_experiment(pk_experiment):
     queryset = Observations.objects.filter(plots__experiment_id=pk_experiment).distinct()
     serializer = ObservationSerializer(queryset, many=True)
