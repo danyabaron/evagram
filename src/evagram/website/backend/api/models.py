@@ -14,7 +14,7 @@ class Owners(models.Model):
 class Experiments(models.Model):
     experiment_id = models.AutoField(primary_key=True)
     experiment_name = models.CharField(null=False, default="null")
-    created_at = models.DateTimeField(auto_now_add=True)
+    create_date = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey('Owners', models.CASCADE)
 
     class Meta:
