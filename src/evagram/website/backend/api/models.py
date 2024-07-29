@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+from django.db.models import Q
 
 
 class Owners(models.Model):
@@ -14,8 +16,8 @@ class Owners(models.Model):
 class Experiments(models.Model):
     experiment_id = models.AutoField(primary_key=True)
     experiment_name = models.CharField(null=False, default="null")
-    create_date = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey('Owners', models.CASCADE)
+    create_date = models.DateTimeField(default=timezone.now)
+    owner = models.ForeignKey('Owners', on_delete=models.PROTECT)
 
     class Meta:
         db_table = 'experiments'
@@ -56,37 +58,44 @@ class Groups(models.Model):
         db_table = 'groups'
 
 
-class Plots(models.Model):
-    class PlotType(models.TextChoices):
-        SCATTER = ("SC", "Scatter")
-        MAP_SCATTER = ("MS", "Map Scatter")
-        MAP_GRIDDED = ("MG", "Map Gridded")
-        DENSITY = ("DN", "Density")
-        HISTOGRAM = ("HG", "Histogram")
-        LINE = ("LN", "Line")
+class PlotType(models.TextChoices):
+    SCATTER = ("scatter", "Scatter Plot")
+    MAP_SCATTER = ("map_scatter", "Map Scatter Plot")
+    MAP_GRIDDED = ("map_gridded", "Map Gridded")
+    DENSITY = ("density", "Density Graph")
+    HISTOGRAM = ("histogram", "Histogram")
+    LINE = ("line", "Line Graph")
 
+
+class Plots(models.Model):
     plot_id = models.AutoField(primary_key=True)
-    plot_type = models.CharField(max_length=2, choices=PlotType.choices, default=PlotType.SCATTER)
+    plot_type = models.CharField(choices=PlotType.choices, null=True)
     div = models.CharField(blank=True, null=True)
     script = models.CharField(blank=True, null=True)
     begin_cycle_time = models.DateTimeField(null=False)
     end_cycle_time = models.DateTimeField(null=True)
-    experiment = models.ForeignKey(Experiments, models.CASCADE)
-    reader = models.ForeignKey(Readers, models.CASCADE)
-    observation = models.ForeignKey(Observations, models.CASCADE)
-    variable = models.ForeignKey(Variables, models.CASCADE)
-    group = models.ForeignKey(Groups, models.CASCADE)
+    experiment = models.ForeignKey(Experiments, on_delete=models.CASCADE)
+    reader = models.ForeignKey(Readers, on_delete=models.CASCADE)
+    observation = models.ForeignKey(Observations, on_delete=models.CASCADE)
+    variable = models.ForeignKey(Variables, on_delete=models.CASCADE)
+    group = models.ForeignKey(Groups, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'plots'
         unique_together = (('experiment', 'reader', 'observation', 'variable', 'group'),)
+        constraints = [
+            models.CheckConstraint(
+                check=Q(plot_type__in=PlotType.values),
+                name='valid_plot_type'
+            ),
+        ]
 
 
 class Aliases(models.Model):
     alias_id = models.AutoField(primary_key=True)
     alias_name = models.CharField(null=False)
     alias_value = models.CharField(null=False)
-    reader = models.ForeignKey(Readers, models.CASCADE)
+    reader = models.ForeignKey(Readers, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'aliases'

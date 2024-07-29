@@ -3,23 +3,23 @@
 from django.db import migrations
 
 READERS = [
-    'IodaObsSpace',
-    'SocaRestart',
-    'JediLog'
+    'ioda_obs_space',
+    'soca_restart',
+    'jedi_log_space'
 ]
 
 ALIASES = {
-    'IodaObsSpace': [
+    'ioda_obs_space': [
         ('Observation', 'Observation'),
         ('Group', 'Plots'),
         ('Variable', 'Variable'),
     ],
-    'SocaRestart': [
+    'soca_restart': [
         ('Observation', 'SOCA'),
         ('Group', 'SocaVars'),
         ('Variable', 'Variable'),
     ],
-    'JediLog': [
+    'jedi_log_space': [
         ('Observation', 'JediLog'),
         ('Group', 'Log Options'),
         ('Variable', 'Variable'),
@@ -42,5 +42,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(populate_readers_and_aliases),
+        migrations.RunPython(populate_readers_and_aliases, reverse_code=migrations.RunPython.noop),
     ]
