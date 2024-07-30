@@ -1,4 +1,4 @@
-import styles from "../styles/PlotMenu.module.css";
+
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import PlotList from "./PlotList.js";
@@ -42,6 +42,10 @@ function PlotMenu() {
       })
       .catch((error) => console.log(error));
   }, []);
+
+
+  // need another function to open second menu 
+
 
   const submitForm = (e) => {
     setCurrentOwner(document.getElementById("user_menu").value);
@@ -152,27 +156,55 @@ function PlotMenu() {
   };
 
   return (
-    <div id="menu_container" className={styles.menu_container}>
-      <div className={styles.dropdown_container}>
-        <label>User:</label>
+    // <div id="experiment-header">
+
+    // </div>
+    <div id="main-div" className="min-h-screen flex flex-col items-left">
+      <header className="font-heading font-bold text-black text-2xl text-center w-full bg-white p-5 shadow-lg">
+          Experiment View
+
+        </header>
+     
+ 
+    <div id="menu_container" className="mt-10 ml-10 flex flex-col w-96 justify-center items-center ">
+      <header className="font-heading font-bold text-black text-2xl text-center mt-4">
+            Experiment Details
+
+          </header>
+      
+      <div id="required-dropdowns" className="">
+        <header className="font-heading italic font-medium text-black text-sm text-center mt-1 ">
+            Fields marked with * are mandatory
+
+          </header>
+        
+
+      </div>
+      
+      <div id="dropdown-container" className="mt-3 p-6 w-full flex rounded-md flex-col  bg-white shadow-lg ">
+        <label className="font-body font-bold text-black">User:</label>
         <DropdownList
           id="user_menu"
           updateOptionCallback={updateOptionsByUser}
           objects={owners}
+          
         />
-        <label>Experiment:</label>
+        <label className="font-body font-bold text-black">Experiment:</label>
         <DropdownList
           id="experiment_menu"
           updateOptionCallback={updateOptionsByExperiment}
           objects={experiments}
+          
+
         />
-        <label>Observation:</label>
+        <label className="font-body font-bold text-black">Observation:</label>
         <DropdownList
           id="observation_menu"
           updateOptionCallback={updateOptionsByObservation}
           objects={observations}
+          
         />
-        <label>Variable:</label>
+        <label className="font-body font-bold text-black">Variable:</label>
         <VariableDropdownList
           id="variable_menu"
           updateOptionsByVariableName={updateOptionsByVariableName}
@@ -180,17 +212,21 @@ function PlotMenu() {
           variablesMap={variablesMap}
           toggleChannel={toggleChannel}
         />
-        <label>Group:</label>
+        <label className="font-body font-bold text-black">Group:</label>
         <DropdownList id="group_menu" objects={groups} />
-        <button
-          className="submitBtn"
+        
+      </div>
+
+      <button
+          className="submitBtn m-5 w-48 h-10 font-heading text-white shadow-lg rounded-md font-bold bg-primary-blue"
           type="submit"
           onClick={(e) => submitForm(e)}
         >
           Submit
         </button>
-      </div>
-      <div className={styles.plot}>
+
+
+      <div className="ml-[100px] w-[60%] h-[300px]">
         <PlotList
           owner={currentOwner}
           experiment={currentExperiment}
@@ -200,6 +236,7 @@ function PlotMenu() {
           group={currentGroup}
         />
       </div>
+    </div>
     </div>
   );
 }
