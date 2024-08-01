@@ -101,10 +101,7 @@ def update_user_option(request):
         owner_id = request.GET["owner_id"]
         Owners.objects.get(pk=owner_id)
         data = {
-            "experiments": [],
-            "observations": [],
-            "variables": [],
-            "groups": []
+            "experiments": []
         }
         data["experiments"] = get_experiments_by_owner(owner_id)
         return Response(data)
@@ -126,9 +123,7 @@ def update_experiment_option(request):
         experiment_id = request.GET["experiment_id"]
         Experiments.objects.get(pk=experiment_id)
         data = {
-            "observations": [],
-            "variables": [],
-            "groups": []
+            "observations": []
         }
         data["observations"] = get_observations_by_experiment(experiment_id)
         return Response(data)
@@ -152,7 +147,6 @@ def update_observation_option(request):
         Observations.objects.get(pk=observation_id)
         data = {
             "variables": [],
-            "groups": [],
             "variablesMap": {}
         }
         data["variables"] = get_variables_by_observation(experiment_id, observation_id)

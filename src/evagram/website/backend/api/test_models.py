@@ -20,7 +20,7 @@ class TestModels(TestCase):
         self.variable = Variables.objects.create(variable_name="brightnessTemperature", channel=1)
         # Create a group
         self.group = Groups.objects.create(group_name="gsi_hofx_vs_jedi_hofx")
-    
+
     def test_plot_creation(self):
         """Test that a plot can be created successfully."""
         plot = Plots.objects.create(
@@ -35,12 +35,12 @@ class TestModels(TestCase):
         plot_count = Plots.objects.count()
         self.assertEqual(plot_count, 1)
         self.assertEqual(plot.plot_type, PlotType.SCATTER)
-    
+
     def test_experiment_unique_together_constraint(self):
         """Test the unique together constraint for Experiments."""
         with self.assertRaises(Exception):
             Experiments.objects.create(experiment_name="test_experiment", owner=self.owner)
-    
+
     def test_variable_unique_together_constraint(self):
         """Test the unique together constraint for Variables."""
         with self.assertRaises(Exception):
