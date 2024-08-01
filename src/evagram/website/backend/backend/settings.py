@@ -15,7 +15,6 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-pg_host = os.environ.get('DB_HOST')
 pg_password = os.environ.get('DB_PASSWORD')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -92,7 +91,7 @@ DATABASES = {
         'NAME': 'evagram',
         'USER': 'postgres',
         'PORT': 5432,
-        'HOST': pg_host,
+        'HOST': '127.0.0.1',
         'PASSWORD': pg_password
     }
 }
