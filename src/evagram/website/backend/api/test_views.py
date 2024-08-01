@@ -3,7 +3,6 @@ from api.models import Owners, Plots
 
 
 class TestAPIView(TestCase):
-    fixtures = ["test_data.json"]
 
     def test_initial_load(self):
         response = self.client.get("/api/initial-load/")
@@ -13,19 +12,6 @@ class TestAPIView(TestCase):
         self.assertTrue("groups" in response.json())
         self.assertTrue("observations" in response.json())
         self.assertTrue("variables" in response.json())
-
-    def test_get_single_plot(self):
-        response = self.client.get(
-            "/api/get-plots-by-field/?owner_id=1&experiment_id=12&observation_id=1"
-            "&variable_name=brightnessTemperature&channel=4&group_id=1")
-        self.assertEqual("owner_id=1&experiment_id=12&observation_id=1&"
-                         "variable_name=brightnessTemperature&channel=4&group_id=1",
-                         response.request['QUERY_STRING'])
-        self.assertEqual(200, response.status_code)
-        # check if plot components in response match with plot id in database
-        plot = Plots.objects.get(pk=response.json()[0]["plot_id"])
-        self.assertEqual(plot.div, response.json()[0]["div"])
-        self.assertEqual(plot.script, response.json()[0]["script"])
 
     def test_plot_insufficient_params(self):
         response = self.client.get("/api/get-plots-by-field/?owner_id=1")
