@@ -20,12 +20,25 @@ def get_plots_by_field(request):
     try:
         owner_id = request.GET["owner_id"]
         experiment_id = request.GET["experiment_id"]
+        cycle_time = request.GET["cycle_time"]
+        reader_id = request.GET["reader_id"]
         observation_id = request.GET["observation_id"]
         variable_name = request.GET["variable_name"]
         channel = request.GET["channel"]
         group_id = request.GET["group_id"]
+        plot_type = request.GET["plot_type"]
 
         plots = Plots.objects.none()
+
+        # Assertion/Validation Checks
+        # ensure owner and experiment are selected
+        if owner_id != "null" and experiment_id != "null":
+            # verify experiment is part of owner
+            experiments = Experiments.objects.filter(owner_id=owner_id)
+            current_experiment = Experiments.objects.get(experiment_id=experiment_id)
+            error_msg = ("Experiment not found for the specified username. "
+                         "Please verify the username and experiment details.")
+            assert current_experiment in experiments, error_msg
 
         # invalid input
         if owner_id == "null":
@@ -34,49 +47,59 @@ def get_plots_by_field(request):
                 {"error": "Please specify a username. The 'null' value is not a valid username."},
                 status=400)
 
-        # get plots by owner field
+        # experiment not selected, query by owner
         elif experiment_id == "null":
             experiments = Experiments.objects.filter(owner_id=owner_id)
             plots = Plots.objects.filter(experiment_id__in=experiments)
 
-        # check if owner and experiment are selected
-        if owner_id != "null" and experiment_id != "null":
-            # verify experiment is part of owner
-            experiments = Experiments.objects.filter(owner_id=owner_id)
-            current_experiment = Experiments.objects.get(experiment_id=experiment_id)
-            error_msg = ("The selected experiment cannot be found with the given username. "
-                         "Please make sure both the username and experiment exists "
-                         "and experiment is a part of that username.")
-            assert current_experiment in experiments, error_msg
-            # get plots by experiment field
-            if observation_id == "null":
-                plots = Plots.objects.filter(experiment=experiment_id)
+        # cycle time not selected, query by experiment
+        elif cycle_time == "null":
+            plots = Plots.objects.filter(experiment=experiment_id)
 
-            # get plots by observation field
-            elif variable_name == "null":
-                plots = Plots.objects.filter(experiment=experiment_id,
-                                             observation=observation_id)
+        # reader not selected, query by cycle time
+        elif reader_id == "null":
+            plots = Plots.objects.filter(experiment=experiment_id,
+                                         begin_cycle_time=cycle_time)
 
-            # get plots by variable field
-            elif group_id == "null":
-                # lookup variable id by variable name and channel
-                if channel == "null":
-                    channel = None
-                variable_id = Variables.objects.get(
-                    variable_name=variable_name, channel=channel).variable_id
-                plots = Plots.objects.filter(
-                    experiment=experiment_id,
-                    observation=observation_id,
-                    variable=variable_id)
+        # observation not selected, query by reader
+        elif observation_id == "null":
+            plots = Plots.objects.filter(experiment=experiment_id,
+                                         begin_cycle_time=cycle_time,
+                                         reader=reader_id)
 
-            elif group_id != "":
-                if channel == "null":
-                    channel = None
-                variable_id = Variables.objects.get(variable_name=variable_name, channel=channel)
-                plots = Plots.objects.filter(experiment=experiment_id,
-                                             group=group_id,
-                                             observation=observation_id,
-                                             variable=variable_id)
+        # variable not selected, query by observation
+        elif variable_name == "null":
+            plots = Plots.objects.filter(experiment=experiment_id,
+                                         begin_cycle_time=cycle_time,
+                                         reader=reader_id,
+                                         observation=observation_id)
+
+        # group not selected, query by variable
+        elif group_id == "null":
+            plots = Plots.objects.filter(experiment=experiment_id,
+                                         begin_cycle_time=cycle_time,
+                                         reader=reader_id,
+                                         observation=observation_id,
+                                         variable=get_variable_id(variable_name, channel))
+
+        # plot type not selected, query by group
+        elif plot_type == "null":
+            plots = Plots.objects.filter(experiment=experiment_id,
+                                         begin_cycle_time=cycle_time,
+                                         reader=reader_id,
+                                         observation=observation_id,
+                                         variable=get_variable_id(variable_name, channel),
+                                         group_id=group_id)
+
+        # every field is selected
+        elif plot_type != "":
+            plots = Plots.objects.filter(experiment=experiment_id,
+                                         begin_cycle_time=cycle_time,
+                                         reader=reader_id,
+                                         observation=observation_id,
+                                         variable=get_variable_id(variable_name, channel),
+                                         group_id=group_id,
+                                         plot_type=plot_type)
 
         serializer = PlotSerializer(plots, many=True)
         return Response(serializer.data)
@@ -276,7 +299,8 @@ def update_group_option(request):
         group_id = request.GET["group_id"]
         Groups.objects.get(pk=group_id)
 
-        variable_id = Variables.objects.get(variable_name=variable_name, channel=None if channel == "null" else channel)
+        variable_id = Variables.objects.get(variable_name=variable_name, 
+                                            channel=None if channel == "null" else channel)
 
         data = {
             "plot_types": []
@@ -357,3 +381,10 @@ def get_plot_types_by_group(pk_experiment, cycle_time, pk_reader, pk_observation
                                     variable=pk_variable,
                                     group=pk_group).values("plot_type").distinct()
     return list(queryset)
+
+def get_variable_id(variable_name, channel):
+    # lookup variable id by variable name and channel
+    channel = None if channel == "null" else channel
+    variable_id = Variables.objects.get(variable_name=variable_name,
+                                        channel=channel).variable_id
+    return variable_id
