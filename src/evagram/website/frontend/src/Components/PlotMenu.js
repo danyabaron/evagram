@@ -15,16 +15,22 @@ constraints.
 */
 function PlotMenu() {
   const [owners, setOwners] = useState([]);
-  const [groups, setGroups] = useState([]);
   const [experiments, setExperiments] = useState([]);
+  const [cycleTimes, setCycleTimes] = useState([]);
+  const [readers, setReaders] = useState([]);
   const [observations, setObservations] = useState([]);
   const [variablesMap, setVariablesMap] = useState(new Map());
-  const [currentOwner, setCurrentOwner] = useState("");
-  const [currentExperiment, setCurrentExperiment] = useState("");
-  const [currentObservation, setCurrentObservation] = useState("");
-  const [currentVariableName, setCurrentVariableName] = useState("");
-  const [currentChannel, setCurrentChannel] = useState("null");
-  const [currentGroup, setCurrentGroup] = useState("");
+  const [groups, setGroups] = useState([]);
+  const [plotTypes, setPlotTypes] = useState([]);
+  const [selectedOwner, setSelectedOwner] = useState("");
+  const [selectedExperiment, setSelectedExperiment] = useState("");
+  const [selectedCycleTime, setSelectedCycleTime] = useState("");
+  const [selectedReader, setSelectedReader] = useState("");
+  const [selectedObservation, setSelectedObservation] = useState("");
+  const [selectedVariableName, setSelectedVariableName] = useState("");
+  const [selectedChannel, setSelectedChannel] = useState("null");
+  const [selectedGroup, setSelectedGroup] = useState("");
+  const [selectedPlotType, setSelectedPlotType] = useState("");
 
   const [toggleChannel, setToggleChannel] = useState(false);
 
@@ -41,21 +47,23 @@ function PlotMenu() {
   }, []);
 
   const submitForm = (e) => {
-    setCurrentOwner(document.getElementById("user_menu").value);
-    setCurrentExperiment(document.getElementById("experiment_menu").value);
-    setCurrentObservation(document.getElementById("observation_menu").value);
-    setCurrentVariableName(document.getElementById("variable_menu").value);
-    setCurrentChannel(document.getElementById("channel_menu").value);
-    setCurrentGroup(document.getElementById("group_menu").value);
+    setSelectedOwner(document.getElementById("user_menu").value);
+    setSelectedExperiment(document.getElementById("experiment_menu").value);
+    setSelectedObservation(document.getElementById("observation_menu").value);
+    setSelectedVariableName(document.getElementById("variable_menu").value);
+    setSelectedChannel(document.getElementById("channel_menu").value);
+    setSelectedGroup(document.getElementById("group_menu").value);
   };
 
   const updateOptionsByUser = (e) => {
-    // setCurrentExperiment(""); // sets state to empty until all data is fetched
     setExperiments([]);
+    setCycleTimes([]);
+    setReaders([]);
     setObservations([]);
     setVariablesMap(new Map());
     setToggleChannel(false);
     setGroups([]);
+    setPlotTypes([]);
     if (e.target.value !== "null") {
       axios
         .get("http://localhost:8000/api/update-user-option/", {
@@ -71,16 +79,62 @@ function PlotMenu() {
   };
 
   const updateOptionsByExperiment = (e) => {
+    setCycleTimes([]);
+    setReaders([]);
     setObservations([]);
     setVariablesMap(new Map());
     setToggleChannel(false);
     setGroups([]);
+    setPlotTypes([]);
     if (e.target.value !== "null") {
-      //setCurrentGroup("");
       axios
         .get("http://localhost:8000/api/update-experiment-option/", {
           params: {
             experiment_id: e.target.value,
+          },
+        })
+        .then((response) => {
+          setCycleTimes(response.data["cycle_times"]);
+        })
+        .catch((error) => console.log(error));
+    }
+  };
+
+  const updateOptionsByCycleTime = (e) => {
+    setReaders([]);
+    setObservations([]);
+    setVariablesMap(new Map());
+    setToggleChannel(false);
+    setGroups([]);
+    setPlotTypes([]);
+    if (e.target.value !== "null") {
+      axios
+        .get("http://localhost:8000/api/update-cycle-time-option/", {
+          params: {
+            experiment_id: document.getElementById("experiment_menu").value,
+            cycle_time: e.target.value,
+          },
+        })
+        .then((response) => {
+          setReaders(response.data["readers"]);
+        })
+        .catch((error) => console.log(error));
+    }
+  };
+
+  const updateOptionsByReader = (e) => {
+    setObservations([]);
+    setVariablesMap(new Map());
+    setToggleChannel(false);
+    setGroups([]);
+    setPlotTypes([]);
+    if (e.target.value !== "null") {
+      axios
+        .get("http://localhost:8000/api/update-reader-option/", {
+          params: {
+            experiment_id: document.getElementById("experiment_menu").value,
+            cycle_time: document.getElementById("cycle_time_menu").value,
+            reader_id: e.target.value,
           },
         })
         .then((response) => {
@@ -94,11 +148,14 @@ function PlotMenu() {
     setVariablesMap(new Map());
     setToggleChannel(false);
     setGroups([]);
+    setPlotTypes([]);
     if (e.target.value !== "null") {
       axios
         .get("http://localhost:8000/api/update-observation-option/", {
           params: {
             experiment_id: document.getElementById("experiment_menu").value,
+            cycle_time: document.getElementById("cycle_time_menu").value,
+            reader_id: document.getElementById("reader_menu").value,
             observation_id: e.target.value,
           },
         })
@@ -112,6 +169,7 @@ function PlotMenu() {
   const updateOptionsByVariableName = (e) => {
     setToggleChannel(false);
     setGroups([]);
+    setPlotTypes([]);
     if (e.target.value !== "null") {
       setToggleChannel(true);
       var channel = "null";
@@ -122,6 +180,8 @@ function PlotMenu() {
         .get("http://localhost:8000/api/update-variable-option/", {
           params: {
             experiment_id: document.getElementById("experiment_menu").value,
+            cycle_time: document.getElementById("cycle_time_menu").value,
+            reader_id: document.getElementById("reader_menu").value,
             observation_id: document.getElementById("observation_menu").value,
             variable_name: e.target.value,
             channel: channel,
@@ -136,11 +196,14 @@ function PlotMenu() {
 
   const updateOptionsByChannel = (e) => {
     setGroups([]);
+    setPlotTypes([]);
     if (e.target.value !== "null") {
       axios
         .get("http://localhost:8000/api/update-variable-option/", {
           params: {
             experiment_id: document.getElementById("experiment_menu").value,
+            cycle_time: document.getElementById("cycle_time_menu").value,
+            reader_id: document.getElementById("reader_menu").value,
             observation_id: document.getElementById("observation_menu").value,
             variable_name: document.getElementById("variable_menu").value,
             channel: e.target.value,
@@ -148,6 +211,28 @@ function PlotMenu() {
         })
         .then((response) => {
           setGroups(response.data["groups"]);
+        })
+        .catch((error) => console.log(error));
+    }
+  };
+
+  const updateOptionsByGroup = (e) => {
+    setPlotTypes([]);
+    if (e.target.value !== "null") {
+      axios
+        .get("http://localhost:8000/api/update-group-option/", {
+          params: {
+            experiment_id: document.getElementById("experiment_menu").value,
+            cycle_time: document.getElementById("cycle_time_menu").value,
+            reader_id: document.getElementById("reader_menu").value,
+            observation_id: document.getElementById("observation_menu").value,
+            variable_name: document.getElementById("variable_menu").value,
+            channel: document.getElementById("channel_menu").value,
+            group_id: e.target.value,
+          },
+        })
+        .then((response) => {
+          setPlotTypes(response.data["plot_types"]);
         })
         .catch((error) => console.log(error));
     }
@@ -168,6 +253,18 @@ function PlotMenu() {
           updateOptionCallback={updateOptionsByExperiment}
           objects={experiments}
         />
+        <label>Cycle Times:</label>
+        <DropdownList
+          id="cycle_time_menu"
+          updateOptionCallback={updateOptionsByCycleTime}
+          objects={cycleTimes}
+        />
+        <label>Reader:</label>
+        <DropdownList
+          id="reader_menu"
+          updateOptionCallback={updateOptionsByReader}
+          objects={readers}
+        />
         <label>Observation:</label>
         <DropdownList
           id="observation_menu"
@@ -183,7 +280,13 @@ function PlotMenu() {
           toggleChannel={toggleChannel}
         />
         <label>Group:</label>
-        <DropdownList id="group_menu" objects={groups} />
+        <DropdownList
+          id="group_menu"
+          updateOptionCallback={updateOptionsByGroup}
+          objects={groups}
+        />
+        <label>Plot Types:</label>
+        <DropdownList id="plot_type_menu" objects={plotTypes} />
         <button
           className="submitBtn"
           type="submit"
@@ -194,12 +297,15 @@ function PlotMenu() {
       </div>
       <div className={styles.plot}>
         <PlotList
-          owner={currentOwner}
-          experiment={currentExperiment}
-          observation={currentObservation}
-          variableName={currentVariableName}
-          channel={currentChannel}
-          group={currentGroup}
+          owner={selectedOwner}
+          experiment={selectedExperiment}
+          cycleTime={selectedCycleTime}
+          reader={selectedReader}
+          observation={selectedObservation}
+          variableName={selectedVariableName}
+          channel={selectedChannel}
+          group={selectedGroup}
+          plotType={selectedPlotType}
         />
       </div>
     </div>

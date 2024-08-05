@@ -333,7 +333,8 @@ def get_experiments_by_owner(pk_owner):
 
 def get_cycle_times_by_experiment(pk_experiment):
     queryset = Plots.objects.filter(experiment=pk_experiment).values("begin_cycle_time").distinct()
-    return list(queryset)
+    serializer = CycleTimeSerializer(queryset, many=True)
+    return serializer.data
 
 
 def get_readers_by_cycle_time(pk_experiment, cycle_time):
@@ -380,7 +381,8 @@ def get_plot_types_by_group(pk_experiment, cycle_time, pk_reader, pk_observation
                                     observation=pk_observation,
                                     variable=pk_variable,
                                     group=pk_group).values("plot_type").distinct()
-    return list(queryset)
+    serializer = PlotTypeSerializer(queryset, many=True)
+    return serializer.data
 
 def get_variable_id(variable_name, channel):
     # lookup variable id by variable name and channel
