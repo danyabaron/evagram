@@ -8,11 +8,18 @@ from django.core.exceptions import ObjectDoesNotExist
 
 @api_view(['GET'])
 def initial_load(request):
-    data = {
-        "owners": []
-    }
-    data["owners"] = get_owners()
-    return Response(data)
+    try:
+        data = {
+            "owners": [],
+            "experiments": []
+        }
+        data["owners"] = get_owners()
+        assert len(data["owners"]) > 0, "Internal issue. No users found."
+        data["experiments"] = get_experiments_by_owner(data["owners"][0]["owner_id"])
+        return Response(data)
+
+    except AssertionError as e:
+        return Response({"error": str(e)}, status=400)
 
 
 @api_view(['GET'])
