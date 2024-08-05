@@ -49,10 +49,13 @@ function PlotMenu() {
   const submitForm = (e) => {
     setSelectedOwner(document.getElementById("user_menu").value);
     setSelectedExperiment(document.getElementById("experiment_menu").value);
+    setSelectedCycleTime(document.getElementById("cycle_time_menu").value);
+    setSelectedReader(document.getElementById("reader_menu").value);
     setSelectedObservation(document.getElementById("observation_menu").value);
     setSelectedVariableName(document.getElementById("variable_menu").value);
     setSelectedChannel(document.getElementById("channel_menu").value);
     setSelectedGroup(document.getElementById("group_menu").value);
+    setSelectedPlotType(document.getElementById("plot_type_menu").value);
   };
 
   const updateOptionsByUser = (e) => {
