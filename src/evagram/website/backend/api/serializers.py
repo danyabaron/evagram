@@ -23,7 +23,7 @@ class ExperimentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Experiments
-        fields = ['key', 'value', 'content', 'experiment_id', 'experiment_name']
+        fields = ['key', 'value', 'content', 'experiment_id', 'experiment_name', 'create_date']
 
 
 class ReaderSerializer(serializers.ModelSerializer):

@@ -123,9 +123,9 @@ def update_experiment_option(request):
         experiment_id = request.GET["experiment_id"]
         Experiments.objects.get(pk=experiment_id)
         data = {
-            "observations": []
+            "cycle_times": []
         }
-        data["observations"] = get_observations_by_experiment(experiment_id)
+        data["cycle_times"] = get_cycle_times_by_experiment(experiment_id)
         return Response(data)
 
     except ValueError as e:
@@ -140,16 +140,62 @@ def update_experiment_option(request):
 
 
 @api_view(['GET'])
+def update_cycle_time_option(request):
+    try:
+        experiment_id = request.GET["experiment_id"]
+        cycle_time = request.GET["cycle_time"]
+        data = {
+            "readers": []
+        }
+        data["readers"] = get_readers_by_cycle_time(experiment_id, cycle_time)
+        return Response(data)
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+    except KeyError as e:
+        error_msg = "Missing request parameter detected: {}".format(str(e))
+        return Response({"error": error_msg}, status=400)
+
+    except ObjectDoesNotExist as e:
+        return Response({"error": str(e)}, status=404)
+
+@api_view(['GET'])
+def update_reader_option(request):
+    try:
+        experiment_id = request.GET["experiment_id"]
+        cycle_time = request.GET["cycle_time"]
+        reader_id = request.GET["reader_id"]
+        Readers.objects.get(pk=reader_id)
+        data = {
+            "observations": []
+        }
+        data["observations"] = get_observations_by_reader(experiment_id, cycle_time, reader_id)
+        return Response(data)
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+    except KeyError as e:
+        error_msg = "Missing request parameter detected: {}".format(str(e))
+        return Response({"error": error_msg}, status=400)
+
+    except ObjectDoesNotExist as e:
+        return Response({"error": str(e)}, status=404)
+
+@api_view(['GET'])
 def update_observation_option(request):
     try:
         experiment_id = request.GET["experiment_id"]
+        cycle_time = request.GET["cycle_time"]
+        reader_id = request.GET["reader_id"]
         observation_id = request.GET["observation_id"]
         Observations.objects.get(pk=observation_id)
         data = {
             "variables": [],
             "variablesMap": {}
         }
-        data["variables"] = get_variables_by_observation(experiment_id, observation_id)
+        data["variables"] = get_variables_by_observation(experiment_id, cycle_time, reader_id, observation_id)
         variablesMap = {}
         for variable in data["variables"]:
             variablesMap[variable['variable_name']] = variablesMap.get(
@@ -172,6 +218,8 @@ def update_observation_option(request):
 def update_variable_option(request):
     try:
         experiment_id = request.GET["experiment_id"]
+        cycle_time = request.GET["cycle_time"]
+        reader_id = request.GET["reader_id"]
         observation_id = request.GET["observation_id"]
         variable_name = request.GET["variable_name"]
         channel = request.GET["channel"]
@@ -198,13 +246,43 @@ def update_variable_option(request):
             "groups": [],
             "channel": channel
         }
-        data["groups"] = get_groups_by_variable(experiment_id, observation_id, variable_id)
+        data["groups"] = get_groups_by_variable(experiment_id, cycle_time, reader_id, observation_id, variable_id)
         return Response(data)
 
     except AssertionError as e:
         error_msg = ("Unable to locate the given variable name. "
                      "Make sure a channel option is selected if exists.")
         return Response({"error": error_msg}, status=404)
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+    except KeyError as e:
+        error_msg = "Missing request parameter detected: {}".format(str(e))
+        return Response({"error": error_msg}, status=400)
+
+    except ObjectDoesNotExist as e:
+        return Response({"error": str(e)}, status=404)
+
+@api_view(['GET'])
+def update_group_option(request):
+    try:
+        experiment_id = request.GET["experiment_id"]
+        cycle_time = request.GET["cycle_time"]
+        reader_id = request.GET["reader_id"]
+        observation_id = request.GET["observation_id"]
+        variable_name = request.GET["variable_name"]
+        channel = request.GET["channel"]
+        group_id = request.GET["group_id"]
+        Groups.objects.get(pk=group_id)
+
+        variable_id = Variables.objects.get(variable_name=variable_name, channel=None if channel == "null" else channel)
+
+        data = {
+            "plot_types": []
+        }
+        data["plot_types"] = get_plot_types_by_group(experiment_id, cycle_time, reader_id, observation_id, variable_id, group_id)
+        return Response(data)
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
@@ -229,30 +307,53 @@ def get_experiments_by_owner(pk_owner):
     return serializer.data
 
 
-def get_readers_by_experiment(pk_experiment):
-    queryset = Readers.objects.filter(plots__experiment_id=pk_experiment).distinct()
-    serializer = ReaderSerializer(queryset, many=True)
-    return serializer.data
+def get_cycle_times_by_experiment(pk_experiment):
+    queryset = Plots.objects.filter(experiment=pk_experiment).values("begin_cycle_time").distinct()
+    return list(queryset)
 
 
-def get_observations_by_experiment(pk_experiment):
-    queryset = Observations.objects.filter(plots__experiment_id=pk_experiment).distinct()
-    serializer = ObservationSerializer(queryset, many=True)
-    return serializer.data
-
-
-def get_variables_by_observation(pk_experiment, pk_observation):
+def get_readers_by_cycle_time(pk_experiment, cycle_time):
     queryset = Plots.objects.filter(experiment=pk_experiment,
-                                    observation=pk_observation).values_list("variable_id")
+                                    begin_cycle_time=cycle_time).values_list("reader_id").distinct()
+    readers = Readers.objects.filter(reader_id__in=queryset)
+    serializer = ReaderSerializer(readers, many=True)
+    return serializer.data
+
+
+def get_observations_by_reader(pk_experiment, cycle_time, pk_reader):
+    queryset = Plots.objects.filter(experiment=pk_experiment,
+                                    begin_cycle_time=cycle_time,
+                                    reader=pk_reader).values_list("observation_id").distinct()
+    observations = Observations.objects.filter(observation_id__in=queryset)
+    serializer = ObservationSerializer(observations, many=True)
+    return serializer.data
+
+
+def get_variables_by_observation(pk_experiment, cycle_time, pk_reader, pk_observation):
+    queryset = Plots.objects.filter(experiment=pk_experiment,
+                                    begin_cycle_time=cycle_time,
+                                    reader=pk_reader,
+                                    observation=pk_observation).values_list("variable_id").distinct()
     variables = Variables.objects.filter(variable_id__in=queryset)
     serializer = VariableSerializer(variables, many=True)
     return serializer.data
 
 
-def get_groups_by_variable(pk_experiment, pk_observation, pk_variable):
+def get_groups_by_variable(pk_experiment, cycle_time, pk_reader, pk_observation, pk_variable):
     queryset = Plots.objects.filter(experiment=pk_experiment,
+                                    begin_cycle_time=cycle_time,
+                                    reader=pk_reader,
                                     observation=pk_observation,
-                                    variable=pk_variable).values_list("group_id")
+                                    variable=pk_variable).values_list("group_id").distinct()
     groups = Groups.objects.filter(group_id__in=queryset)
     serializer = GroupSerializer(groups, many=True)
     return serializer.data
+
+def get_plot_types_by_group(pk_experiment, cycle_time, pk_reader, pk_observation, pk_variable, pk_group):
+    queryset = Plots.objects.filter(experiment=pk_experiment,
+                                    begin_cycle_time=cycle_time,
+                                    reader=pk_reader,
+                                    observation=pk_observation,
+                                    variable=pk_variable,
+                                    group=pk_group).values("plot_type").distinct()
+    return list(queryset)
