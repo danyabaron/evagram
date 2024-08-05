@@ -249,6 +249,7 @@ function PlotMenu() {
           id="user_menu"
           updateOptionCallback={updateOptionsByUser}
           objects={owners}
+          nullable={false}
         />
         <label>Experiment:</label>
         <DropdownList
