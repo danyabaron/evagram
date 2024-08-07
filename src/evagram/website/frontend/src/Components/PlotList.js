@@ -44,10 +44,13 @@ function PlotList({
     }
   }, [owner, experiment, observation, variableName, channel, group]);
   return (
+    // carousel menu
     <div>
-      {plots.map((plot) => (
+      {/* {plots.map((plot) => (
         <Plot key={plot.plot_id} div={plot.div} script={plot.script} />
-      ))}
+      ))} */}
+      
+
     </div>
   );
 }
