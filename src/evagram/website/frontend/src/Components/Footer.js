@@ -4,33 +4,59 @@ import GoddardLogo from "./assets/goddard-logo.png";
 
 function Footer() {
     return ( 
-<footer className="bg-footer text-white space-x-4">
+<footer className="bg-footer text-white mt-5 p-6">
   {/* <div className="w-full flex flex-row items-center"> */}
     
     {/* Footer Logo / Brand */}
-    <div className="mb-4 md:mb-0 flex flex-row items-center space-x-4">
-        <div id="nasa-logo" className="p-4">
-            <a href="https://www.nasa.gov/" class="flex items-center space-x-3">
-                <NasaLogo/>
-            </a>
-                        
-        </div>
+    <div className=" flex flex-row items-center justify-between">
 
-        <div id="goddard-logo" className="w-fit p-4">
-                <a href="" className="flex items-center space-x-3">
-                    <img src={GoddardLogo} width={600} alt="Goddard Logo" /> {/* Using img tag for PNG */}
-                </a>           
-                        
-        </div>
-
-        <div id="footer-text" className="pl-5">
-            <ul className="list-disc">
-                <li>
-                Privacy Policy & Important Notices
-                </li>
-            </ul>
+        <div id="nasa-container" className="flex-grow-0">
+            <div id="nasa-logo" className="p-4">
+                <a href="https://www.nasa.gov/" class="flex items-center space-x-3">
+                    <NasaLogo/>
+                </a>
+                            
+            </div>
 
         </div>
+        
+        <div id="goddard-container" className="flex flex-grow justify-center ">
+            <div id="goddard-logo" className="w-fit">
+                    <a href="" className="flex items-center space-x-3">
+                        <img src={GoddardLogo} width={600} alt="Goddard Logo" /> {/* Using img tag for PNG */}
+                    </a>           
+                            
+            </div>
+
+            
+        </div>
+       <div id="footer-text-container" className="flex-grow-0 ">
+        <div id="footer-text">
+                <ul className="list-disc text-left mb-5">
+                    <li>
+                        Privacy Policy & Important Notices
+                    </li>
+                    <li>
+                        Contact Us
+                    </li>
+                    <li>
+                       Page Last Updated: 8/8/2024
+                    </li>
+                </ul>
+
+                <p className="text-left">
+                    Nasa Official: Alexey Shiklomanov
+                   
+
+                </p>
+                <p className="text-left">
+                Web Curator: Akira Sewnath & Danya Baron 
+                </p>
+
+            </div>
+
+       </div>
+        
     </div>
     
     {/* </div> */}

@@ -206,6 +206,11 @@ function PlotMenu() {
   const [selectedReader, setSelectedReader] = useState('');
 
 
+  const [seelctedObservation, setSelectedObservation] = useState('');
+  const [selectedVariable, setSelectedVariable] = useState('');
+  const [selectedGroup, setSelectedGroup] = useState('');
+  const [selectedPlotType, setSelectedPlotType] = useState('');
+
   // State to control visibility of expand-dropdowns
   const [isExpandDropdownsVisible, setExpandDropdownsVisible] = useState(false);
 
@@ -350,32 +355,53 @@ function PlotMenu() {
     {isExpandDropdownsVisible && (
               <div id="expand-dropdowns" className="w-fit flex flex-col">
                 <label className="font-body font-bold text-black">Observation</label>
-                <select className="bg-[#cccfd3] w-36 bg-opacity-100 shadow-lg m-1.5 mb-1 rounded-md">
-                  {observationOptions.map((observation, index) => (
-                    <option key={index} value={observation}>{observation}</option>
-                  ))}
-                </select>
+                <select
+                  className="bg-[#cccfd3] w-36 bg-opacity-100 shadow-lg m-1.5 mb-1 rounded-md"
+                  value={seelctedObservation}
+                  onChange={(e) => setSelectedObservation(e.target.value)} 
+              >
+                <option value="" disabled>Select One</option>
+                {observationOptions.map((observation, index) => (
+                  <option key={index} value={observation}>{observation}</option>
+                ))}
+              </select>
 
                 <label className="font-body font-bold text-black">Variable</label>
-                <select className="bg-[#cccfd3] bg-opacity-100 w-36 shadow-lg m-1.5 mb-1 rounded-md">
-                  {variableOptions.map((variable, index) => (
-                    <option key={index} value={variable}>{variable}</option>
-                  ))}
-                </select>
+                  <select
+                    className="bg-[#cccfd3] w-36 bg-opacity-100 shadow-lg m-1.5 mb-1 rounded-md"
+                    value={selectedVariable}
+                    onChange={(e) => setSelectedVariable(e.target.value)} 
+                >
+                  <option value="" disabled>Select One</option>
+                    {variableOptions.map((variable, index) => (
+                      <option key={index} value={variable}>{variable}</option>
+                ))}
+              </select>
 
                 <label className="font-body font-bold text-black">Group</label>
-                <select className="bg-[#cccfd3] w-36 bg-opacity-100 shadow-lg m-1.5 mb-1 rounded-md">
-                  {groupOptions.map((group, index) => (
-                    <option key={index} value={group}>{group}</option>
+                <select
+                    className="bg-[#cccfd3] w-36 bg-opacity-100 shadow-lg m-1.5 mb-1 rounded-md"
+                    value={selectedVariable}
+                    onChange={(e) => setSelectedGroup(e.target.value)} 
+                >
+                  <option value="" disabled>Select One</option>
+                    {groupOptions.map((group, index) => (
+                      <option key={index} value={group}>{group}</option>
+                ))}
+              </select>
+
+                <label className="font-body font-bold text-black">Plot Type</label>
+                  <select
+                      className="bg-[#cccfd3] w-36 bg-opacity-100 shadow-lg m-1.5 mb-1 rounded-md"
+                      value={selectedPlotType}
+                      onChange={(e) => setSelectedPlotType(e.target.value)} 
+                  >
+                    <option value="" disabled>Select One</option>
+                      {plotTypeOptions.map((plottype, index) => (
+                        <option key={index} value={plottype}>{plottype}</option>
                   ))}
                 </select>
 
-                <label className="font-body font-bold text-black">Plot Type</label>
-                <select className="bg-[#cccfd3] w-36 bg-opacity-100 shadow-lg m-1.5 mb-1 rounded-md">
-                  {plotTypeOptions.map((plotType, index) => (
-                    <option key={index} value={plotType}>{plotType}</option>
-                  ))}
-                </select>
               </div>
             )}
   
