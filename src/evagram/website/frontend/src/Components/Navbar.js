@@ -1,28 +1,12 @@
 import {FaBars, FaTimes} from "react-icons/fa";
 import { ReactComponent as NasaLogo } from "./assets/nasa-logo.svg";
+import { IoMdInformationCircleOutline } from "react-icons/io";
 
 
 function Navbar() {
     return ( 
      
-            
-            // <nav className="bg-primary-blue w-screen flex flex-wrap h-36">
-            //     <div id="header-logo" className="container mx-auto">
-            //         <h3 className="text-3xl font-bold underline">Logo</h3>
-
-            //     </div>
-
-                
-            //     <a href="/#">Home</a>
-            //     <a href="/#">My work</a>
-            //     <a href="/#">Blog</a>
-            //     <a href="/#">About me</a>
-            //     <button>
-
-            //     </button>
-            // </nav>
-
-        <nav class="bg-primary-blue h-28 flex items-center w-full max-w-screen justify-between shadow-lg">
+        <nav class="bg-primary-blue h-28 flex items-center w-full max-w-screen relative top-0 justify-between shadow-lg">
             <div class="max-w-screen flex items-center w-full justify-between">
                 <div class="flex items-center space-x-4">
                    {/* nav bar header logo */}
