@@ -20,19 +20,19 @@ function Footer() {
 
         </div>
         
-        <div id="goddard-container" className="flex flex-grow justify-center ">
-            <div id="goddard-logo" className="w-fit">
+        <div id="goddard-container" className="flex flex-grow ml-3 justify-center ">
+            <div id="goddard-logo" className="">
                     <a href="" className="flex items-center space-x-3">
-                        <img src={GoddardLogo} width={600} alt="Goddard Logo" /> {/* Using img tag for PNG */}
+                        <img src={GoddardLogo} width={500} height={120} alt="Goddard Logo" /> {/* Using img tag for PNG */}
                     </a>           
                             
             </div>
 
             
         </div>
-       <div id="footer-text-container" className="flex-grow-0 ">
+       <div id="footer-text-container" className="flex-grow-0 ml-9">
         <div id="footer-text">
-                <ul className="list-disc text-left mb-5">
+                <ul className="list-disc text-sm text-left mb-5">
                     <li>
                         Privacy Policy & Important Notices
                     </li>
@@ -44,12 +44,12 @@ function Footer() {
                     </li>
                 </ul>
 
-                <p className="text-left">
+                <p className="text-left text-sm">
                     Nasa Official: Alexey Shiklomanov
                    
 
                 </p>
-                <p className="text-left">
+                <p className="text-left text-sm">
                 Web Curator: Akira Sewnath & Danya Baron 
                 </p>
 

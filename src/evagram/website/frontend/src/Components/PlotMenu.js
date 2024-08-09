@@ -197,6 +197,7 @@ function PlotMenu() {
   const variableOptions = ["Variable X", "Variable Y", "Variable Z"];
   const groupOptions = ["Group 1", "Group 2", "Group 3"];
   const plotTypeOptions = ["Plot Type A", "Plot Type B", "Plot Type C"];
+  const channelOptions =["Atmoshphere", "Temperature", "Brightness"];
 
 
   // State for dropdown selections
@@ -208,7 +209,9 @@ function PlotMenu() {
 
   const [seelctedObservation, setSelectedObservation] = useState('');
   const [selectedVariable, setSelectedVariable] = useState('');
+  const [selectedChannel, setSelectedChannel] = useState('');
   const [selectedGroup, setSelectedGroup] = useState('');
+  
   const [selectedPlotType, setSelectedPlotType] = useState('');
 
   // State to control visibility of expand-dropdowns
@@ -377,6 +380,23 @@ function PlotMenu() {
                       <option key={index} value={variable}>{variable}</option>
                 ))}
               </select>
+              
+              {/* Conditionally Render New Dropdown if Any Variable is Selected */}
+              {selectedVariable && (
+                <>
+                  <label className="font-body font-bold text-black">Channel</label>
+                  <select
+                    className="bg-[#cccfd3] w-36 bg-opacity-100 shadow-lg m-1.5 mb-1 rounded-md"
+                    value={selectedChannel}
+                    onChange={(e) => setSelectedChannel(e.target.value)} 
+                  >
+                    <option value="" disabled>Select One</option>
+                    {channelOptions.map((channel, index) => (
+                      <option key={index} value={channel}>{channel}</option>
+                    ))}
+                  </select>
+                </>
+              )}
 
                 <label className="font-body font-bold text-black">Group</label>
                 <select
