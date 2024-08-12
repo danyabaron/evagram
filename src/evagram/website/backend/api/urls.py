@@ -11,4 +11,5 @@ urlpatterns = [
     path("update-observation-option/", views.update_observation_option),
     path("update-variable-option/", views.update_variable_option),
     path("update-group-option/", views.update_group_option),
+    path("get-reader-aliases/", views.get_reader_aliases),
 ]

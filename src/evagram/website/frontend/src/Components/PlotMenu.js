@@ -32,6 +32,10 @@ function PlotMenu() {
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedPlotType, setSelectedPlotType] = useState("");
 
+  const [observationAlias, setObservationAlias] = useState("Observation");
+  const [variableAlias, setVariableAlias] = useState("Variable");
+  const [groupAlias, setGroupAlias] = useState("Group");
+
   const [toggleChannel, setToggleChannel] = useState(false);
 
   const didMount = useRef(false);
@@ -132,6 +136,7 @@ function PlotMenu() {
     setToggleChannel(false);
     setGroups([]);
     setPlotTypes([]);
+    updateReaderAliases(e.target.value);
     if (e.target.value !== "null") {
       axios
         .get("http://localhost:8000/api/update-reader-option/", {
@@ -242,6 +247,27 @@ function PlotMenu() {
     }
   };
 
+  const updateReaderAliases = (reader_id) => {
+    if (reader_id === "null") {
+      setObservationAlias("Observation");
+      setVariableAlias("Variable");
+      setGroupAlias("Group");
+    } else {
+      axios
+        .get("http://localhost:8000/api/get-reader-aliases/", {
+          params: {
+            reader_id: reader_id,
+          },
+        })
+        .then((response) => {
+          setObservationAlias(response.data["observation_name"]);
+          setVariableAlias(response.data["variable_name"]);
+          setGroupAlias(response.data["group_name"]);
+        })
+        .catch((error) => console.log(error));
+    }
+  };
+
   return (
     <div id="menu_container" className={styles.menu_container}>
       <div className={styles.dropdown_container}>
@@ -270,13 +296,13 @@ function PlotMenu() {
           updateOptionCallback={updateOptionsByReader}
           objects={readers}
         />
-        <label>Observation:</label>
+        <label>{observationAlias}:</label>
         <DropdownList
           id="observation_menu"
           updateOptionCallback={updateOptionsByObservation}
           objects={observations}
         />
-        <label>Variable:</label>
+        <label>{variableAlias}:</label>
         <VariableDropdownList
           id="variable_menu"
           updateOptionsByVariableName={updateOptionsByVariableName}
@@ -284,7 +310,7 @@ function PlotMenu() {
           variablesMap={variablesMap}
           toggleChannel={toggleChannel}
         />
-        <label>Group:</label>
+        <label>{groupAlias}:</label>
         <DropdownList
           id="group_menu"
           updateOptionCallback={updateOptionsByGroup}

@@ -190,6 +190,7 @@ def update_cycle_time_option(request):
     except ObjectDoesNotExist as e:
         return Response({"error": str(e)}, status=404)
 
+
 @api_view(['GET'])
 def update_reader_option(request):
     try:
@@ -213,6 +214,7 @@ def update_reader_option(request):
     except ObjectDoesNotExist as e:
         return Response({"error": str(e)}, status=404)
 
+
 @api_view(['GET'])
 def update_observation_option(request):
     try:
@@ -225,7 +227,10 @@ def update_observation_option(request):
             "variables": [],
             "variablesMap": {}
         }
-        data["variables"] = get_variables_by_observation(experiment_id, cycle_time, reader_id, observation_id)
+        data["variables"] = get_variables_by_observation(experiment_id,
+                                                         cycle_time,
+                                                         reader_id,
+                                                         observation_id)
         variablesMap = {}
         for variable in data["variables"]:
             variablesMap[variable['variable_name']] = variablesMap.get(
@@ -276,7 +281,11 @@ def update_variable_option(request):
             "groups": [],
             "channel": channel
         }
-        data["groups"] = get_groups_by_variable(experiment_id, cycle_time, reader_id, observation_id, variable_id)
+        data["groups"] = get_groups_by_variable(experiment_id,
+                                                cycle_time,
+                                                reader_id,
+                                                observation_id,
+                                                variable_id)
         return Response(data)
 
     except AssertionError as e:
@@ -294,6 +303,7 @@ def update_variable_option(request):
     except ObjectDoesNotExist as e:
         return Response({"error": str(e)}, status=404)
 
+
 @api_view(['GET'])
 def update_group_option(request):
     try:
@@ -306,13 +316,18 @@ def update_group_option(request):
         group_id = request.GET["group_id"]
         Groups.objects.get(pk=group_id)
 
-        variable_id = Variables.objects.get(variable_name=variable_name, 
+        variable_id = Variables.objects.get(variable_name=variable_name,
                                             channel=None if channel == "null" else channel)
 
         data = {
             "plot_types": []
         }
-        data["plot_types"] = get_plot_types_by_group(experiment_id, cycle_time, reader_id, observation_id, variable_id, group_id)
+        data["plot_types"] = get_plot_types_by_group(experiment_id,
+                                                     cycle_time,
+                                                     reader_id,
+                                                     observation_id,
+                                                     variable_id,
+                                                     group_id)
         return Response(data)
 
     except ValueError as e:
@@ -324,6 +339,20 @@ def update_group_option(request):
 
     except ObjectDoesNotExist as e:
         return Response({"error": str(e)}, status=404)
+
+
+@api_view(['GET'])
+def get_reader_aliases(request):
+    reader_id = request.GET["reader_id"]
+    data = {
+        "observation_name": Aliases.objects.get(reader_id=reader_id,
+                                                alias_name='Observation').alias_value,
+        "variable_name": Aliases.objects.get(reader_id=reader_id,
+                                             alias_name='Variable').alias_value,
+        "group_name": Aliases.objects.get(reader_id=reader_id,
+                                          alias_name='Group').alias_value,
+    }
+    return Response(data)
 
 
 def get_owners():
@@ -365,7 +394,8 @@ def get_variables_by_observation(pk_experiment, cycle_time, pk_reader, pk_observ
     queryset = Plots.objects.filter(experiment=pk_experiment,
                                     begin_cycle_time=cycle_time,
                                     reader=pk_reader,
-                                    observation=pk_observation).values_list("variable_id").distinct()
+                                    observation=pk_observation
+                                    ).values_list("variable_id").distinct()
     variables = Variables.objects.filter(variable_id__in=queryset)
     serializer = VariableSerializer(variables, many=True)
     return serializer.data
@@ -381,7 +411,9 @@ def get_groups_by_variable(pk_experiment, cycle_time, pk_reader, pk_observation,
     serializer = GroupSerializer(groups, many=True)
     return serializer.data
 
-def get_plot_types_by_group(pk_experiment, cycle_time, pk_reader, pk_observation, pk_variable, pk_group):
+
+def get_plot_types_by_group(pk_experiment, cycle_time, pk_reader, pk_observation, pk_variable,
+                            pk_group):
     queryset = Plots.objects.filter(experiment=pk_experiment,
                                     begin_cycle_time=cycle_time,
                                     reader=pk_reader,
@@ -390,6 +422,7 @@ def get_plot_types_by_group(pk_experiment, cycle_time, pk_reader, pk_observation
                                     group=pk_group).values("plot_type").distinct()
     serializer = PlotTypeSerializer(queryset, many=True)
     return serializer.data
+
 
 def get_variable_id(variable_name, channel):
     # lookup variable id by variable name and channel

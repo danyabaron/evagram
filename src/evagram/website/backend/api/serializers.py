@@ -25,12 +25,14 @@ class ExperimentSerializer(serializers.ModelSerializer):
         model = Experiments
         fields = ['key', 'value', 'content', 'experiment_id', 'experiment_name', 'create_date']
 
+
 class CycleTimeSerializer(serializers.BaseSerializer):
     def to_representation(self, instance):
         instance['key'] = instance['begin_cycle_time']
         instance['value'] = instance['begin_cycle_time']
         instance['content'] = instance['begin_cycle_time']
         return instance
+
 
 class ReaderSerializer(serializers.ModelSerializer):
     key = serializers.ModelField(model_field=Readers()._meta.get_field('reader_id'))
