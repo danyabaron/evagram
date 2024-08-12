@@ -27,11 +27,22 @@ class TestEvagramInputTool(TestCase):
 
     def test_RollbackOnException(self):
         with self.assertRaises(Exception):
-            input_data(owner="postgres", experiment="bad_experiment", eva_directory="tests/dummy")
+            input_data(owner="postgres",
+                       experiment="bad_experiment",
+                       eva_directory="tests/invalid_reader")
 
         owner = Owners.objects.get(username="postgres")
         experiments = Experiments.objects.filter(experiment_name="bad_experiment", owner=owner)
         self.assertEqual(0, len(experiments))
-        observations = Observations.objects.filter(
-            observation_name="airs_aqua").filter(observation_name="eva")
-        self.assertEqual(0, len(observations))
+
+    def test_InvalidCycleTime(self):
+        with self.assertRaises(ValueError):
+            input_data(owner="postgres",
+                       experiment="invalid_cycle_time",
+                       eva_directory="tests/invalid_cycle_time")
+
+    def test_InvalidPlotType(self):
+        with self.assertRaises(Exception):
+            input_data(owner="postgres",
+                       experiment="invalid_plot_type",
+                       eva_directory="tests/invalid_plot_type")

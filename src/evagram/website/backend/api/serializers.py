@@ -7,7 +7,7 @@ class OwnerSerializer(serializers.ModelSerializer):
     key = serializers.ModelField(model_field=Owners()._meta.get_field('owner_id'))
     value = serializers.ModelField(model_field=Owners()._meta.get_field('owner_id'))
     content = serializers.ModelField(model_field=Owners()._meta.get_field('username'))
-    type = models.CharField(default='owner')
+    serial_type = models.CharField(default='owners')
 
     class Meta:
         model = Owners
@@ -19,18 +19,29 @@ class ExperimentSerializer(serializers.ModelSerializer):
     key = serializers.ModelField(model_field=Experiments()._meta.get_field('experiment_id'))
     value = serializers.ModelField(model_field=Experiments()._meta.get_field('experiment_id'))
     content = serializers.ModelField(model_field=Experiments()._meta.get_field('experiment_name'))
-    type = models.CharField(default='experiment')
+    serial_type = models.CharField(default='experiments')
 
     class Meta:
         model = Experiments
         fields = ['key', 'value', 'content', 'experiment_id', 'experiment_name']
 
 
+class ReaderSerializer(serializers.ModelSerializer):
+    key = serializers.ModelField(model_field=Readers()._meta.get_field('reader_id'))
+    value = serializers.ModelField(model_field=Readers()._meta.get_field('reader_id'))
+    content = serializers.ModelField(model_field=Readers()._meta.get_field('reader_name'))
+    serial_type = models.CharField(default='readers')
+
+    class Meta:
+        model = Readers
+        fields = ['key', 'value', 'content', 'reader_id', 'reader_name']
+
+
 class ObservationSerializer(serializers.ModelSerializer):
     key = serializers.ModelField(model_field=Observations()._meta.get_field('observation_id'))
     value = serializers.ModelField(model_field=Observations()._meta.get_field('observation_id'))
     content = serializers.ModelField(model_field=Observations()._meta.get_field('observation_name'))
-    type = models.CharField(default='observation')
+    serial_type = models.CharField(default='observations')
 
     class Meta:
         model = Observations
@@ -41,7 +52,7 @@ class VariableSerializer(serializers.ModelSerializer):
     key = serializers.ModelField(model_field=Variables()._meta.get_field('variable_id'))
     value = serializers.ModelField(model_field=Variables()._meta.get_field('variable_id'))
     content = serializers.ModelField(model_field=Variables()._meta.get_field('variable_name'))
-    type = models.CharField(default='variable')
+    serial_type = models.CharField(default='variables')
 
     class Meta:
         model = Variables
@@ -52,7 +63,7 @@ class GroupSerializer(serializers.ModelSerializer):
     key = serializers.ModelField(model_field=Groups()._meta.get_field('group_id'))
     value = serializers.ModelField(model_field=Groups()._meta.get_field('group_id'))
     content = serializers.ModelField(model_field=Groups()._meta.get_field('group_name'))
-    type = models.CharField(default='group')
+    serial_type = models.CharField(default='groups')
 
     class Meta:
         model = Groups

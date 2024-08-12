@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from api.models import Experiments, Owners, Observations, Groups, Plots
+from api.models import *
 from api.serializers import *
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -101,10 +101,7 @@ def update_user_option(request):
         owner_id = request.GET["owner_id"]
         Owners.objects.get(pk=owner_id)
         data = {
-            "experiments": [],
-            "observations": [],
-            "variables": [],
-            "groups": []
+            "experiments": []
         }
         data["experiments"] = get_experiments_by_owner(owner_id)
         return Response(data)
@@ -126,9 +123,7 @@ def update_experiment_option(request):
         experiment_id = request.GET["experiment_id"]
         Experiments.objects.get(pk=experiment_id)
         data = {
-            "observations": [],
-            "variables": [],
-            "groups": []
+            "observations": []
         }
         data["observations"] = get_observations_by_experiment(experiment_id)
         return Response(data)
@@ -152,7 +147,6 @@ def update_observation_option(request):
         Observations.objects.get(pk=observation_id)
         data = {
             "variables": [],
-            "groups": [],
             "variablesMap": {}
         }
         data["variables"] = get_variables_by_observation(experiment_id, observation_id)
@@ -232,6 +226,12 @@ def get_owners():
 def get_experiments_by_owner(pk_owner):
     queryset = Experiments.objects.filter(owner_id=pk_owner)
     serializer = ExperimentSerializer(queryset, many=True)
+    return serializer.data
+
+
+def get_readers_by_experiment(pk_experiment):
+    queryset = Readers.objects.filter(plots__experiment_id=pk_experiment).distinct()
+    serializer = ReaderSerializer(queryset, many=True)
     return serializer.data
 
 
