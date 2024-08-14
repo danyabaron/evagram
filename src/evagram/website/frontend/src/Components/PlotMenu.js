@@ -279,7 +279,7 @@ function PlotMenu() {
       </div>
 
      
-  <div id="outer-container" className="mt-5 mb-5 flex flex-row justify-start items-start space-x-6  w-full">
+  <div id="outer-container" className="mt-5 mb-5 flex flex-col lg:flex-row justify-center items-center lg:gap-48 gap-10">
     <div id="menu_container" className="mt-5 ml-10 flex flex-col w-96 justify-center items-center ">
 
       <div id="experiment-details-label" className="p-3">
@@ -469,16 +469,29 @@ function PlotMenu() {
       </div>
 
       <button
-          className="submitBtn m-5 w-48 h-10 font-heading text-white shadow-lg rounded-md font-bold bg-primary-blue"
+          className="submitBtn m-5 w-48 h-10 font-heading text-white shadow-lg rounded-md font-bold bg-primary-blue hover:bg-[#17507E] 
+          transition ease-in-out duration-300"
           type="submit"
           onClick={(e) => submitForm(e)}
         >
           Submit
         </button>
+
+        <button
+          className="submitBtn m-5 w-48 h-14 font-heading text-white shadow-lg rounded-md font-bold bg-secondary-blue
+           hover:bg-[#071C2C] 
+          transition ease-in-out duration-300"
+          
+        >
+          
+          View Another Experiment
+        </button>
+
+
         </div>
 
         {/* carousel with static images to test  */}
-        <div id="carousel" className="m-2 w-full flex flex-col items-center">
+        <div id="carousel" className="m-2 w-fit flex flex-col items-center">
           <div id="plot-header" className="p-5">
             <header className="font-heading font-bold text-black text-2xl text-center ">
               Plot View
@@ -492,14 +505,18 @@ function PlotMenu() {
               </div>
               <div id="arrow-container" className="flex flex-row p-5 space-x-4"> 
               {/* left arrow */}
-              <div className="right-5 text-2xl p-2 rounded-full bg-primary-blue/20 text-black cursor-pointer">
+              <div className="right-5 text-2xl p-2 rounded-full bg-primary-blue/20 text-black cursor-pointer hover:bg-secondary-blue
+              transition ease-in-out duration-300">
                   
-                  <RiArrowLeftSLine onClick={prevSlide} size={40}/>
+                  <RiArrowLeftSLine onClick={prevSlide} size={40} className="hover:text-white
+                  transition ease-in-out duration-300" />
                 </div>
               {/* right arrow */}
-                <div className="right-5 text-2xl p-2 rounded-full bg-primary-blue/20 text-black cursor-pointer">
+                <div className="right-5 text-2xl p-2 rounded-full bg-primary-blue/20 text-black cursor-pointer  hover:bg-secondary-blue
+              transition ease-in-out duration-300">
                  
-                  <RiArrowRightSLine onClick={nextSlide} size={40}/>
+                  <RiArrowRightSLine onClick={nextSlide} size={40} className="hover:text-white
+                  transition ease-in-out duration-300"/>
                 </div>
 
               </div>
