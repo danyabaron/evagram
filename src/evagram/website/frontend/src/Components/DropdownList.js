@@ -8,7 +8,8 @@ DropdownList has three properties:
 */
 function DropdownList({ id, updateOptionCallback, objects }) {
   return (
-    <select id={id} onChange={updateOptionCallback}>
+    // styling for drop down bubbles here
+    <select id={id} onChange={updateOptionCallback} className="bg-[#cccfd3] bg-opacity-100 shadow-lg m-1.5 mb-1 rounded-md">
       <option value="null">--</option>
       {objects.map((object) => (
         <option key={object.key} value={object.value}>
