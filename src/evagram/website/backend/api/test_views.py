@@ -62,7 +62,7 @@ class TestAPIView(TestCase):
         - The response data contains the expected plot information.
         - Missing or incorrect parameters result in appropriate error messages and
           status codes (e.g., 400 Bad Request, 404 Not Found).
-        
+
         This test ensures that the view handles various scenarios, such as filtering
         by owner, experiment, cycle time, reader, observation, variable, group, and plot type.
         """
@@ -104,7 +104,8 @@ class TestAPIView(TestCase):
         various combinations of parameters to ensure:
         - The response status is 200 OK when valid parameters are provided.
         - The response contains the correct plot data based on the selected parameters.
-        - Appropriate error messages and status codes are returned for missing or invalid parameters.
+        - Appropriate error messages and status codes are returned for missing
+        or invalid parameters.
 
         This test ensures that the cascading selection logic is correctly enforced,
         and that the view behaves as expected for different parameter configurations.
@@ -145,10 +146,10 @@ class TestAPIView(TestCase):
         """Test the update_cycle_time_option view returns correct data."""
         response = self.client.get('/api/update-cycle-time-option/', {
             'experiment_id': self.experiment.experiment_id,
-            'cycle_time': self.begin_cycle_time,})
+            'cycle_time': self.begin_cycle_time})
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertIn('readers', response.data)
-    
+
     def test_update_reader_option(self):
         """Test the update_cycle_reader_option view returns correct data."""
         response = self.client.get('/api/update-reader-option/', {
@@ -182,7 +183,7 @@ class TestAPIView(TestCase):
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertIn('groups', response.data)
         self.assertIn('channel', response.data)
-    
+
     def test_update_group_option(self):
         """Test the update_group_option view returns correct data."""
         response = self.client.get('/api/update-group-option/', {
@@ -199,12 +200,12 @@ class TestAPIView(TestCase):
 
     def test_get_reader_aliases(self):
         """
-        Test the 'get_reader_aliases' view to ensure that it returns 
+        Test the 'get_reader_aliases' view to ensure that it returns
         correct alias mappings for the specified reader.
 
-        The test creates a reader and an associated alias, then makes a 
-        GET request to the view with the reader's ID. The response is 
-        checked to confirm that it includes the correct alias names for 
+        The test creates a reader and an associated alias, then makes a
+        GET request to the view with the reader's ID. The response is
+        checked to confirm that it includes the correct alias names for
         observation, variable, and group.
 
         The expected keys in the response are:
