@@ -24,6 +24,17 @@ def initial_load(request):
 
 @api_view(['GET'])
 def get_plots_by_field(request):
+    """
+    The 'get_plots_by_field' view serves as the central endpoint
+    for the experiment page. This endpoint allows users to query plots
+    associated with various parameters that work in a cascading order.
+
+    The parameters are expected to be selected in a specific sequence:
+    - A user (owner) must be selected first.
+    - Once a user is selected, an experiment associated with that user can be selected.
+    - Following this, other parameters such as cycle time, reader, observation,
+        variable, group, and plot type can be selected.
+    """
     try:
         owner_id = request.GET["owner_id"]
         experiment_id = request.GET["experiment_id"]
