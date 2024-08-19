@@ -5,13 +5,6 @@ import PlotList from "./PlotList.js";
 import DropdownList from "./DropdownList.js";
 import VariableDropdownList from "./VariableDropdownList.js";
 
-//icons and static images
-import plot1 from "./assets/plot1.png";
-import plot2 from "./assets/plot2.png";
-import plot3 from "./assets/plot3.png";
-import { SlArrowLeft } from "react-icons/sl";
-import { SlArrowRight } from "react-icons/sl";
-import { RiArrowRightSLine, RiArrowLeftSLine } from "react-icons/ri";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 
 
@@ -169,26 +162,7 @@ function PlotMenu() {
     }
   };
 
-   // array of static carousel images
-
-   const imageList = [
-    {
-      id: 1,
-      src: plot1,
-      alt: "Image 1",
-    },
-    {
-      id: 2,
-      src: plot2,
-      alt: "Image 2",
-    },
-    {
-      id: 3,
-      src: plot3,
-      alt: "Image 3",
-    }
-
-  ]
+  
 
     // Sample options for the dropdowns
   const userOptions = ["User 1", "User 2", "User 3"];
@@ -225,27 +199,6 @@ function PlotMenu() {
     setExpandDropdownsVisible(true); // Show expand-dropdowns when a reader is selected
   };
 
-
-  // Carousel Logic
-
-  // index for carousel images 
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  //logic for slider arrows
-
-  //logic for previous slide button
-  const prevSlide = () => {
-    const isFirstImage = currentIndex === 0;
-    const newIndex = isFirstImage ? imageList.length - 1 : currentIndex - 1;
-    setCurrentIndex(newIndex);
-
-  }
-  //logic for next slide button
-  const nextSlide = () => {
-    const isLastSlide = currentIndex === imageList.length - 1;
-    const newIndex = isLastSlide ? 0 : currentIndex + 1;
-    setCurrentIndex(newIndex);
-  };
 
   return (
     // <div id="experiment-header">
@@ -492,50 +445,7 @@ function PlotMenu() {
 
         </div>
 
-        {/* carousel with static images to test  */}
-        <div id="carousel" className="m-2 w-fit flex flex-col items-center">
-          <div id="plot-header" className="p-5">
-            <header className="font-heading font-bold text-black text-2xl text-center ">
-              Plot View
-            </header>
-          </div>
-          <div id="image-container" className="w-full flex flex-col items-center p-5">
-            <div 
-              style={{backgroundImage: `url(${imageList[currentIndex].src})`}} 
-              className='w-[545px] h-[445px] rounded-lg bg-center bg-cover duration-300'
-            >
-              </div>
-              <div id="arrow-container" className="flex flex-row p-5 space-x-4"> 
-              {/* left arrow */}
-              <div className="right-5 text-2xl p-2 rounded-full bg-primary-blue/20 text-black cursor-pointer hover:bg-secondary-blue
-              transition ease-in-out duration-300">
-                  
-                  <RiArrowLeftSLine onClick={prevSlide} size={40} className="hover:text-white
-                  transition ease-in-out duration-300" />
-                </div>
-              {/* right arrow */}
-                <div className="right-5 text-2xl p-2 rounded-full bg-primary-blue/20 text-black cursor-pointer  hover:bg-secondary-blue
-              transition ease-in-out duration-300">
-                 
-                  <RiArrowRightSLine onClick={nextSlide} size={40} className="hover:text-white
-                  transition ease-in-out duration-300"/>
-                </div>
-
-              </div>
-              <div id="diagnostics-text">
-                <header className="font-body font-medium text-base">
-                  Showing {currentIndex + 1} out of {imageList.length} diagnostics
-                </header>
-              </div>
-              <div id="scroll-text" className="p-2">
-                <header className="font-body italic font-medium text-sm">
-                  Click on arrow buttons to scroll through diagnostics
-                </header>
-              </div>
-             
-
-          </div>
-          
+       
       
         <PlotList
           owner={currentOwner}
@@ -550,7 +460,7 @@ function PlotMenu() {
       
       
     </div>
-    </div>
+    
   );
 }
 
