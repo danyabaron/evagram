@@ -112,7 +112,7 @@ function PlotList({
     // carousel menu
 
     <div>
-      <div id="carousel" className="m-2 w-fit flex flex-col">
+      <div id="carousel" className="m-2 w-fit flex flex-col justify-start">
         <div id="plot-header" className="p-5">
           <header className="font-heading font-bold text-black text-2xl text-center ">
             Plot View
@@ -123,15 +123,16 @@ function PlotList({
             id="image-container"
             className="w-full flex flex-col items-center p-5"
           >
-            <div className="w-[545px] h-[445px] rounded-lg bg-center bg-cover duration-300">
+            <div className="duration-300">
               <Plot
                 div={plots[currentIndex].div}
                 script={plots[currentIndex].script}
               ></Plot>
             </div>
+
             <div id="arrow-container" className="flex flex-row p-5 space-x-4">
-              <div
-                className="right-5 text-2xl p-2 rounded-full bg-primary-blue/20 text-black cursor-pointer hover:bg-secondary-blue
+              <button
+                className="text-2xl p-2 rounded-full bg-primary-blue/20 text-black cursor-pointer hover:bg-secondary-blue
             transition ease-in-out duration-300"
                 onClick={prevSlide}
               >
@@ -139,7 +140,7 @@ function PlotList({
                   size={40}
                   className="hover:text-white transition ease-in-out duration-300"
                 />
-              </div>
+              </button>
               <div
                 className="right-5 text-2xl p-2 rounded-full bg-primary-blue/20 text-black cursor-pointer hover:bg-secondary-blue
             transition ease-in-out duration-300"
