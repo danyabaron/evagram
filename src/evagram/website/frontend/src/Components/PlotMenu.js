@@ -234,34 +234,7 @@ function PlotMenu() {
     }
   };
 
-<<<<<<< HEAD
-  
 
-    // Sample options for the dropdowns
-  const userOptions = ["User 1", "User 2", "User 3"];
-  const experimentOptions = ["Experiment A", "Experiment B", "Experiment C"];
-  const cycleTimeOptions = ["10s", "20s", "30s"];
-  const readerOptions = ["Reader 1", "Reader 2", "Reader 3"];
-  const observationOptions = ["Observation 1", "Observation 2", "Observation 3"];
-  const variableOptions = ["Variable X", "Variable Y", "Variable Z"];
-  const groupOptions = ["Group 1", "Group 2", "Group 3"];
-  const plotTypeOptions = ["Plot Type A", "Plot Type B", "Plot Type C"];
-  const channelOptions =["Atmoshphere", "Temperature", "Brightness"];
-
-
-  // State for dropdown selections
-  const [selectedUser, setSelectedUser] = useState('');
-  const [selectedExperiment, setSelectedExperiment] = useState('');
-  const [selectedCycleTime, setSelectedCycleTime] = useState('');
-  const [selectedReader, setSelectedReader] = useState('');
-
-
-  const [seelctedObservation, setSelectedObservation] = useState('');
-  const [selectedVariable, setSelectedVariable] = useState('');
-  const [selectedChannel, setSelectedChannel] = useState('');
-  const [selectedGroup, setSelectedGroup] = useState('');
-  
-  const [selectedPlotType, setSelectedPlotType] = useState('');
 
   // State to control visibility of expand-dropdowns
   const [isExpandDropdownsVisible, setExpandDropdownsVisible] = useState(false);
@@ -272,7 +245,7 @@ function PlotMenu() {
     setExpandDropdownsVisible(true); // Show expand-dropdowns when a reader is selected
   };
 
-=======
+
   const updateOptionsByGroup = (e) => {
     setPlotTypes([]);
     if (e.target.value !== "null") {
@@ -315,7 +288,7 @@ function PlotMenu() {
         .catch((error) => console.log(error));
     }
   };
->>>>>>> upstream/develop
+
 
   return (
     // <div id="experiment-header">
@@ -505,12 +478,7 @@ function PlotMenu() {
           id="user_menu"
           updateOptionCallback={updateOptionsByUser}
           objects={owners}
-<<<<<<< HEAD
-          // objects={dummyOwners}
-          
-=======
           nullable={false}
->>>>>>> upstream/develop
         />
         <label className="font-body font-bold text-black">Experiment:</label>
         <DropdownList
@@ -520,9 +488,6 @@ function PlotMenu() {
           
 
         />
-<<<<<<< HEAD
-        <label className="font-body font-bold text-black">Observation:</label>
-=======
         <label>Cycle Times:</label>
         <DropdownList
           id="cycle_time_menu"
@@ -536,20 +501,13 @@ function PlotMenu() {
           objects={readers}
         />
         <label>{observationAlias}:</label>
->>>>>>> upstream/develop
         <DropdownList
           id="observation_menu"
           updateOptionCallback={updateOptionsByObservation}
           objects={observations}
           
         />
-<<<<<<< HEAD
-
-        
-        <label className="font-body font-bold text-black">Variable:</label>
-=======
         <label>{variableAlias}:</label>
->>>>>>> upstream/develop
         <VariableDropdownList
           id="variable_menu"
           updateOptionsByVariableName={updateOptionsByVariableName}
@@ -557,7 +515,6 @@ function PlotMenu() {
           variablesMap={variablesMap}
           toggleChannel={toggleChannel}
         />
-<<<<<<< HEAD
         <label className="font-body font-bold text-black">Group:</label>
         <DropdownList id="group_menu" objects={groups} /> */}
 
@@ -567,8 +524,7 @@ function PlotMenu() {
 
       <button
           className="submitBtn m-5 w-48 h-10 font-heading text-white shadow-lg rounded-md font-bold bg-primary-blue hover:bg-[#17507E] 
-          transition ease-in-out duration-300"
-=======
+          transition ease-in-out duration-300"></button>
         <label>{groupAlias}:</label>
         <DropdownList
           id="group_menu"
@@ -579,7 +535,6 @@ function PlotMenu() {
         <DropdownList id="plot_type_menu" objects={plotTypes} />
         <button
           className="submitBtn"
->>>>>>> upstream/develop
           type="submit"
           onClick={(e) => submitForm(e)}
         >
