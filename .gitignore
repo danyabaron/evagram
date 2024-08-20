@@ -137,3 +137,6 @@ dmypy.json
 
 # Front-end build files
 node_modules/
+
+# Zone.Identifier files
+*Zone.Identifier
