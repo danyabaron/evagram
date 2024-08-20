@@ -19,10 +19,13 @@ multiple plots by performing a map on the plot list from the backend to render m
 function PlotList({
   owner,
   experiment,
+  cycleTime,
+  reader,
   observation,
   variableName,
   channel,
   group,
+  plotType,
 }) {
   const [plots, setPlots] = useState([]);
 
@@ -74,27 +77,43 @@ function PlotList({
     if (
       owner !== "" &&
       experiment !== "" &&
+      cycleTime !== "" &&
+      reader !== "" &&
       observation !== "" &&
       variableName !== "" &&
       channel !== "" &&
-      group !== ""
+      group !== "" &&
+      plotType !== ""
     ) {
       axios
         .get("http://localhost:8000/api/get-plots-by-field/", {
           params: {
             owner_id: owner,
             experiment_id: experiment,
+            cycle_time: cycleTime,
+            reader_id: reader,
             observation_id: observation,
             variable_name: variableName,
             channel: channel,
             group_id: group,
+            plot_type: plotType,
           },
         })
         .then((response) => {
           setPlots(response.data);
         });
     }
-  }, [owner, experiment, observation, variableName, channel, group]);
+  }, [
+    owner,
+    experiment,
+    cycleTime,
+    reader,
+    observation,
+    variableName,
+    channel,
+    group,
+    plotType,
+  ]);
   return (
     // carousel menu
 
