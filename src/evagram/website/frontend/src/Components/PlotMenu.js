@@ -280,7 +280,7 @@ function PlotMenu() {
     // <div id="experiment-header">
 
     // </div>
-    <div id="main-div" className="min-h-screen flex flex-col">
+    <div id="main-div" className="min-h-screen  flex flex-col">
       <div
         id="header"
         className="flex justify-center  items-center p-5 bg-white shadow-lg relative"
@@ -308,7 +308,7 @@ function PlotMenu() {
 
       <div
         id="outer-container"
-        className="mt-5 mb-5 flex flex-col lg:flex-row justify-center items-center lg:gap-48 gap-10"
+        className="mt-5 mb-5 flex flex-col justify-center items-center lg:flex-row "
       >
         <div
           id="menu_container"

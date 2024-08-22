@@ -111,17 +111,17 @@ function PlotList({
   return (
     // carousel menu
 
-    <div>
-      <div id="carousel" className="m-2 w-fit flex flex-col justify-start">
-        <div id="plot-header" className="p-5">
+    
+      <div id="carousel" className=" flex w-fit flex-col ">
+        {/* <div id="plot-header" className="p-5">
           <header className="font-heading font-bold text-black text-2xl text-center ">
             Plot View
           </header>
-        </div>
+        </div> */}
         {plots.length > 0 && (
           <div
             id="image-container"
-            className="w-full flex flex-col items-center p-5"
+            className="w-full flex flex-col m-9 items-center p-5"
           >
             <div className="duration-300">
               <Plot
@@ -165,7 +165,7 @@ function PlotList({
           </div>
         )}
       </div>
-    </div>
+    
   );
 }
 
