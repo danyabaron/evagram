@@ -52,6 +52,9 @@ function Footer() {
                 <p className="text-left text-sm">
                 Web Curator: Akira Sewnath & Danya Baron 
                 </p>
+                <p className="text-left text-sm">
+                Web Master: Brandon Zhu 
+                </p>
 
             </div>
 

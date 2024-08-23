@@ -8,8 +8,11 @@ DropdownList has three properties:
 */
 function DropdownList({ id, updateOptionCallback, objects, nullable = true }) {
   return (
-
-    <select id={id} onChange={updateOptionCallback} className="bg-[#cccfd3] bg-opacity-100 shadow-lg m-1.5 mb-1 rounded-md">
+    <select
+      id={id}
+      onChange={updateOptionCallback}
+      className="bg-[#cccfd3] w-36 bg-opacity-100 shadow-lg m-1.5 mb-1 rounded-md"
+    >
       {nullable ? <option value="null">--</option> : null}
 
       {objects.map((object) => (
