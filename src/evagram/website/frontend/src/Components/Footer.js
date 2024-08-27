@@ -4,11 +4,11 @@ import GoddardLogo from "./assets/goddard-logo.png";
 
 function Footer() {
     return ( 
-<footer className="bg-footer text-white mt-5 p-6">
+<footer className="bg-footer text-white p-6">
   {/* <div className="w-full flex flex-row items-center"> */}
     
     {/* Footer Logo / Brand */}
-    <div className=" flex flex-row items-center justify-between">
+    <div className="flex flex-row items-center justify-between">
 
         <div id="nasa-container" className="flex-grow-0">
             <div id="nasa-logo" className="p-4">

@@ -1,4 +1,6 @@
 import {FaBars, FaTimes} from "react-icons/fa";
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { ReactComponent as NasaLogo } from "./assets/nasa-logo.svg";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 
@@ -31,14 +33,14 @@ function Navbar() {
                     active:bg-secondary-blue active:text-white">Home</a>
                 </li>
                 <li>
-                    <a href="/#" className="bg-white text-black shadow-lg rounded px-2 py-1 text-md font-heading 
+                    <Link to="/" className="bg-white text-black shadow-lg rounded px-2 py-1 text-md font-heading 
                     font-semibold w-24 hover:text-white hover:bg-black hover:bg-opacity-40 transition ease-in-out duration-300
-                    active:bg-secondary-blue active:text-white">Experiment</a>
+                    active:bg-secondary-blue active:text-white">Experiment</Link>
                 </li>
                 <li>
-                    <a href="/#" className="bg-white text-black shadow-lg rounded px-2 py-1 text-md font-heading 
+                    <Link to="/about" className="bg-white text-black shadow-lg rounded px-2 py-1 text-md font-heading 
                     font-semibold w-24 hover:text-white hover:bg-black hover:bg-opacity-40 transition ease-in-out duration-300
-                    active:bg-secondary-blue active:text-white">About</a>
+                    active:bg-secondary-blue active:text-white">About</Link>
                 </li>
             </ul>
 
